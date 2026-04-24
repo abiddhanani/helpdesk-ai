@@ -154,10 +154,23 @@ class BaseSpecialistAgent:
 
             if response.stop_reason == "tool_use" and response.tool_calls:
                 # Parallel tool execution within a single agent turn
-                assistant_content = response.content or ""
-                await self._memory.add_message(
-                    {"role": "assistant", "content": assistant_content}
-                )
+                import json as _json3
+                assistant_msg: dict[str, Any] = {
+                    "role": "assistant",
+                    "content": response.content or "",
+                    "tool_calls": [
+                        {
+                            "id": tc.id,
+                            "type": "function",
+                            "function": {
+                                "name": tc.name,
+                                "arguments": _json3.dumps(tc.arguments),
+                            },
+                        }
+                        for tc in response.tool_calls
+                    ],
+                }
+                await self._memory.add_message(assistant_msg)
 
                 tool_results = await asyncio.gather(
                     *[self._execute_tool(tc.name, tc.arguments, tc.id, trace_id) for tc in response.tool_calls]

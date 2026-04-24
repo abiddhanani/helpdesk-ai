@@ -2,12 +2,12 @@
 
 Four progressive exercises building an agentic IT support system on top of the Model Context Protocol (MCP).
 
-| Exercise | What it is |
+| Directory | What it is |
 |----------|-----------|
-| [exercise-1](exercise-1/) | MCP server — 10 tools over a PostgreSQL help desk database |
-| [exercise-2](exercise-2/) | Single AI agent with Reason/Act/Observe loop, multi-turn memory |
-| [exercise-3](exercise-3/) | Multi-agent orchestration — Triage, Resolution, Escalation |
-| [exercise-4](exercise-4/) | Evaluation harness — automated metrics + LLM-as-judge |
+| [mcp-server](mcp-server/) | MCP server — 10 tools over a PostgreSQL help desk database |
+| [helpdesk-agent](helpdesk-agent/) | Single AI agent with Reason/Act/Observe loop, multi-turn memory |
+| [multi-agent](multi-agent/) | Multi-agent orchestration — Triage, Resolution, Escalation (Flint DAG) |
+| [eval-harness](eval-harness/) | Evaluation harness — automated metrics + LLM-as-judge |
 
 ---
 
@@ -39,10 +39,10 @@ docker compose up -d
 
 # 2. Configure environment
 cp .env.example .env
-# Edit .env and set ANTHROPIC_API_KEY
+# Edit .env — set ANTHROPIC_API_KEY at minimum
 
-# 3. Install and seed Exercise 1 (required by all exercises)
-cd exercise-1
+# 3. Install and seed the MCP server (required by all other components)
+cd mcp-server
 uv sync
 uv run seed_data.py
 cd ..
@@ -56,12 +56,15 @@ Each exercise is then runnable independently — see its own `README.md` for det
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `ANTHROPIC_API_KEY` | Yes (ex. 2-4) | — | Anthropic API key |
-| `ANTHROPIC_MODEL` | No | `claude-sonnet-4-6` | Model for agent calls |
+| `ANTHROPIC_API_KEY` | Yes | — | Anthropic API key (also accepted as `OPENAI_API_KEY`) |
+| `ANTHROPIC_MODEL` | No | `claude-sonnet-4-6` | Model for specialist agents (also `AGENT_MODEL`) |
+| `ROUTER_MODEL` | No | `claude-haiku-4-5-20251001` | Cheap model for routing, synthesis, memory compaction |
+| `JUDGE_MODEL` | No | `claude-haiku-4-5-20251001` | Model for LLM-as-judge in eval harness |
 | `DATABASE_URL` | Yes | `postgresql://helpdesk:helpdesk@localhost:5432/helpdesk` | PostgreSQL connection string |
-| `JUDGE_MODEL` | No (ex. 4) | `claude-haiku-4-5` | Model for LLM-as-judge evaluation |
+| `OPENAI_BASE_URL` | No | `https://api.anthropic.com/v1/` | Provider base URL for OpenAI-compat client |
+| `EMBEDDING_API_KEY` | No | — | OpenAI key for `text-embedding-3-small`; falls back to BM25-only if absent |
 
-Never commit `.env`. The `.env.example` file documents all required variables.
+Never commit `.env`. The `.env.example` file documents all variables.
 
 ---
 

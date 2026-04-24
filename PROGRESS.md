@@ -7,9 +7,9 @@ This document captures all enhancements made across the four exercises beyond th
 ## Exercise 1 — MCP Server
 
 ### Hybrid RAG (BM25 + pgvector)
-- **`src/database.py`** — pgvector extension enabled, HNSW indexes on `tickets.embedding` and `knowledge_base.embedding`.
+- **`src/database.py`** — pgvector extension enabled, HNSW indexes on `tickets.embedding` and `knowledge_articles.embedding`.
 - **`src/tools/embeddings.py`** — `text-embedding-3-small` via OpenAI API, async-safe wrapper.
-- **`src/tools/knowledge.py`** + **`src/tools/tickets.py`** — BM25 keyword search fused with cosine similarity via Reciprocal Rank Fusion (k=60). Falls back to BM25 alone for rows without embeddings.
+- **`src/tools/knowledge.py`** + **`src/tools/tickets.py`** — BM25 keyword search fused with cosine similarity via Reciprocal Rank Fusion (k=60). Falls back to BM25 alone for rows without embeddings. Knowledge base BM25 uses `websearch_to_tsquery` with OR between terms for higher recall on natural-language queries; ticket search uses `plainto_tsquery` (AND).
 - **`src/tools/tickets.py`** — `create_ticket` / `update_ticket` fire embedding generation in background threads (non-blocking).
 
 ### Cross-Request Customer Memory
@@ -23,7 +23,7 @@ This document captures all enhancements made across the four exercises beyond th
 
 ### Provider Abstraction (LLM Protocol)
 - **`src/llm/protocol.py`** — `LLMClient` Protocol, `LLMResponse`, `ToolDefinition`, `ToolCall`. All agents depend on this interface, not on any specific SDK.
-- **`src/llm/openai_client.py`** — concrete adapter: OpenAI SDK pointed at `api.anthropic.com/v1/`. Passes `cache_control: ephemeral` for Anthropic prompt caching via `extra_body`.
+- **`src/llm/openai_client.py`** — concrete adapter: OpenAI SDK pointed at `api.anthropic.com/v1/`. Passes `cache_control: ephemeral` for Anthropic prompt caching via `extra_body`. Structured outputs rely on schema-injected system prompts (Anthropic's compat endpoint does not support `response_format: json_object`).
 
 ### Pydantic Structured Outputs
 - **`src/messages.py`** — all inter-agent types (`AgentOutput`, `AgentMessage`, `RouterDecision`, `SynthesizedResult`, `OrchestratorResult`, `MemoryFact`) are Pydantic models. No regex parsing, no bare `json.loads`.

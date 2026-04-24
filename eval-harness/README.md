@@ -1,18 +1,19 @@
 # Exercise 4 — Evaluation Framework
 
-Batch evaluation harness for the multi-agent IT help desk system. Runs 15 scenarios,
+Batch evaluation harness for the multi-agent IT help desk system. Runs scenarios from
+`test_scenarios/scenarios.yaml` (sc-001 enabled by default; others are commented out),
 computes tool accuracy / task completion / efficiency / error recovery metrics, and
 scores each response with an LLM judge (4 dimensions, 1-5 scale).
 
 ## Setup
 
 ```bash
-# Prerequisites: PostgreSQL running and exercise-1 DB seeded
+# Prerequisites: PostgreSQL running and mcp-server DB seeded
 docker compose up -d                                     # from repo root
-cd exercise-1 && uv run python seed_data.py && cd ..
+cd mcp-server && uv run python seed_data.py && cd ..
 
-# Install exercise-4 deps
-cd exercise-4
+# Install eval-harness deps
+cd eval-harness
 uv sync
 
 # Configure environment
@@ -39,9 +40,10 @@ Reports are written to `results/report_<timestamp>.json` and `results/report_<ti
 |---|---|---|
 | `ANTHROPIC_API_KEY` | required | Anthropic API key |
 | `ANTHROPIC_MODEL` | `claude-sonnet-4-6` | Model for the multi-agent system |
+| `ROUTER_MODEL` | `claude-haiku-4-5-20251001` | Cheap model for routing, synthesis, memory compaction |
 | `JUDGE_MODEL` | `claude-haiku-4-5-20251001` | Model for LLM-as-judge scoring |
 | `DATABASE_URL` | `postgresql://helpdesk:helpdesk@localhost:5432/helpdesk` | Postgres connection |
-| `EXERCISE_1_DIR` | auto-detected | Override path to exercise-1 directory |
+| `EXERCISE_1_DIR` | auto-detected | Override path to the `mcp-server` directory |
 
 ## Metrics
 

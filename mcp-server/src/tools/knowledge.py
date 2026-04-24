@@ -40,6 +40,11 @@ def _article_to_dict(article: KnowledgeArticle, bm25_rank: int | None = None, ve
     return d
 
 
+def _keyword_to_or_query(keyword: str) -> str:
+    """Convert a keyword string to a websearch OR query so any term matches."""
+    return " OR ".join(word for word in keyword.split() if word)
+
+
 def _hybrid_search(db, keyword: str, category: str | None, tags: str | None) -> list[dict]:
     """Hybrid BM25 + cosine similarity search with RRF merge."""
     embedding = article_embed_text(keyword, "", "")
@@ -47,6 +52,7 @@ def _hybrid_search(db, keyword: str, category: str | None, tags: str | None) -> 
         return _bm25_search(db, keyword, category, tags)
 
     embedding_str = embedding_to_pg(embedding)
+    keyword_or = _keyword_to_or_query(keyword)
     category_filter = "AND category = :category" if category else ""
     tag_filters = ""
     tag_params: dict = {}
@@ -61,10 +67,10 @@ def _hybrid_search(db, keyword: str, category: str | None, tags: str | None) -> 
             SELECT
                 id,
                 ROW_NUMBER() OVER (
-                    ORDER BY ts_rank_cd(search_vector, plainto_tsquery('english', :keyword)) DESC
+                    ORDER BY ts_rank_cd(search_vector, websearch_to_tsquery('english', :keyword_or)) DESC
                 ) AS bm25_rank
             FROM knowledge_articles
-            WHERE search_vector @@ plainto_tsquery('english', :keyword)
+            WHERE search_vector @@ websearch_to_tsquery('english', :keyword_or)
             {category_filter} {tag_filters}
             LIMIT 50
         ),
@@ -102,6 +108,7 @@ def _hybrid_search(db, keyword: str, category: str | None, tags: str | None) -> 
 
     params = {
         "keyword": keyword,
+        "keyword_or": keyword_or,
         "embedding": embedding_str,
         "k": _RRF_K,
         "bm25w": _RRF_BM25_WEIGHT,
@@ -129,10 +136,11 @@ def _hybrid_search(db, keyword: str, category: str | None, tags: str | None) -> 
 
 def _bm25_search(db, keyword: str, category: str | None, tags: str | None) -> list[dict]:
     """BM25-only fallback when embeddings are unavailable."""
+    keyword_or = _keyword_to_or_query(keyword)
     query = db.query(KnowledgeArticle)
     query = query.filter(
         KnowledgeArticle.search_vector.op("@@")(
-            func.plainto_tsquery("english", keyword)
+            func.websearch_to_tsquery("english", keyword_or)
         )
     )
     if category:

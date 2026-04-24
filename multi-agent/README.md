@@ -1,7 +1,14 @@
 # Exercise 3 — Multi-Agent System
 
-Sequential multi-agent pipeline: Triage → Resolution → Escalation, orchestrated with
-LLM-driven routing decisions and rule-based guardrails.
+Multi-agent IT help desk orchestrated as a Flint parallel DAG:
+
+```
+triage ──┬── resolution ──┐
+         └── escalation ──┴── synthesis
+```
+
+Triage runs first, then resolution and escalation execute in parallel, and synthesis
+merges the two branches into a final intent + summary.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for full design documentation.
 
@@ -10,10 +17,10 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for full design documentation.
 ```bash
 # From repo root — start PostgreSQL and seed data (if not already done)
 docker compose up -d
-cd exercise-1 && uv run python seed_data.py && cd ..
+cd mcp-server && uv run python seed_data.py && cd ..
 
-# Install exercise-3 deps
-cd exercise-3
+# Install multi-agent deps
+cd multi-agent
 uv sync
 
 # Configure environment

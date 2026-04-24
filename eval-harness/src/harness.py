@@ -35,13 +35,16 @@ from anthropic import AsyncAnthropic  # noqa: E402
 from dotenv import load_dotenv  # noqa: E402
 from mcp.client.session import ClientSession  # noqa: E402
 from mcp.client.stdio import StdioServerParameters, get_default_environment, stdio_client  # noqa: E402
+from openai import AsyncOpenAI  # noqa: E402
 
 # exercise-3 components (resolved via _EX3_DIR on sys.path)
 from src.agents.escalation import EscalationAgent  # noqa: E402
 from src.agents.resolution import ResolutionAgent  # noqa: E402
 from src.agents.triage import TriageAgent  # noqa: E402
 from src.context import SharedContext  # noqa: E402
+from src.llm.openai_client import OpenAILLMClient  # noqa: E402
 from src.orchestrator import Orchestrator  # noqa: E402
+from src.routing.llm_router import LLMRouter  # noqa: E402
 from src.trace import TraceLogger  # noqa: E402
 
 # exercise-4 local modules (resolved via _EX4_SRC on sys.path)
@@ -148,12 +151,16 @@ class EvalHarness:
     def __init__(
         self,
         anthropic_client: AsyncAnthropic,
+        llm_client: OpenAILLMClient,
         model: str,
+        router_model: str,
         judge_model: str,
         db_url: str,
     ) -> None:
         self.anthropic = anthropic_client
+        self.llm_client = llm_client
         self.model = model
+        self.router_model = router_model
         self.judge = LLMJudge(anthropic_client, judge_model)
         self.db_url = db_url
 
@@ -211,9 +218,9 @@ class EvalHarness:
                                         s1.initialize(), s2.initialize(), s3.initialize()
                                     )
 
-                                    triage = TriageAgent(s1, self.anthropic, self.model, trace_logger, context)
-                                    resolution = ResolutionAgent(s2, self.anthropic, self.model, trace_logger, context)
-                                    escalation = EscalationAgent(s3, self.anthropic, self.model, trace_logger, context)
+                                    triage = TriageAgent(s1, self.llm_client, self.model, self.router_model, trace_logger, context)
+                                    resolution = ResolutionAgent(s2, self.llm_client, self.model, self.router_model, trace_logger, context)
+                                    escalation = EscalationAgent(s3, self.llm_client, self.model, self.router_model, trace_logger, context)
 
                                     await asyncio.gather(
                                         triage.discover_tools(),
@@ -221,8 +228,10 @@ class EvalHarness:
                                         escalation.discover_tools(),
                                     )
 
+                                    router = LLMRouter(self.llm_client, self.router_model)
                                     orchestrator = Orchestrator(
-                                        triage, resolution, escalation, context, trace_logger
+                                        triage, resolution, escalation, context, trace_logger,
+                                        router, self.llm_client, self.router_model,
                                     )
                                     result = await orchestrator.run(scenario["request"], trace_id)
 
@@ -437,6 +446,7 @@ async def run() -> None:
         sys.exit(1)
 
     model = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-6")
+    router_model = os.environ.get("ROUTER_MODEL", "claude-haiku-4-5-20251001")
     judge_model = os.environ.get("JUDGE_MODEL", "claude-haiku-4-5-20251001")
     db_url = os.environ.get(
         "DATABASE_URL", "postgresql://helpdesk:helpdesk@localhost:5432/helpdesk"
@@ -448,7 +458,10 @@ async def run() -> None:
         scenarios_path = Path(sys.argv[idx + 1])
 
     anthropic_client = AsyncAnthropic(api_key=api_key)
-    harness = EvalHarness(anthropic_client, model, judge_model, db_url)
+    base_url = os.environ.get("OPENAI_BASE_URL", "https://api.anthropic.com/v1/")
+    openai_client = AsyncOpenAI(api_key=api_key, base_url=base_url)
+    llm_client = OpenAILLMClient(openai_client)
+    harness = EvalHarness(anthropic_client, llm_client, model, router_model, judge_model, db_url)
     await harness.run(scenarios_path, RESULTS_DIR)
 
 

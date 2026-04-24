@@ -84,7 +84,6 @@ class OpenAILLMClient:
             "model": model,
             "messages": full_messages,
             "max_tokens": max_tokens,
-            "response_format": {"type": "json_object"},
         }
         if extra_body:
             kwargs["extra_body"] = extra_body

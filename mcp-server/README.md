@@ -14,12 +14,12 @@ Built with FastMCP + PostgreSQL. Communicates over stdio transport.
 docker compose up -d          # from repo root
 
 # 2. Install dependencies
-cd exercise-1
+cd mcp-server
 uv sync
 
 # 3. Configure environment
 cp ../.env.example ../.env
-# Edit .env and set ANTHROPIC_API_KEY (not needed for Exercise 1 itself)
+# Edit .env — set DATABASE_URL if non-default
 
 # 4. Seed the database
 uv run seed_data.py
@@ -52,7 +52,7 @@ This repo's `.claude/settings.json` already has `enableAllProjectMcpServers: tru
     "helpdesk": {
       "command": "uv",
       "args": ["run", "python", "-m", "src.server"],
-      "cwd": "/absolute/path/to/exercise-1",
+      "cwd": "/absolute/path/to/mcp-server",
       "env": {
         "DATABASE_URL": "postgresql://helpdesk:helpdesk@localhost:5432/helpdesk"
       }
@@ -130,7 +130,9 @@ Each tool call opens a database session via `with get_db() as db:`, performs its
 
 ### Full-text search
 
-`tsvector` generated columns are added to `tickets` and `knowledge_articles` via DDL after `create_all()` in `init_db()`. GIN indexes are created on those columns. Queries use `plainto_tsquery` (safe for raw user input — no injection risk, handles punctuation gracefully).
+`tsvector` generated columns are added to `tickets` and `knowledge_articles` via DDL after `create_all()` in `init_db()`. GIN indexes are created on those columns.
+
+Ticket search uses `plainto_tsquery` (AND logic, safe for raw user input). Knowledge base search uses `websearch_to_tsquery` with OR between terms so that any matching keyword finds an article — this gives higher recall for natural-language queries like "VPN connection error" where the article uses "issue" not "error".
 
 ```sql
 -- Added by init_db():

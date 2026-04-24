@@ -437,7 +437,7 @@ wheels = [
 [[package]]
 name = "helpdesk-agent"
 version = "0.1.0"
-source = { virtual = "exercise-2" }
+source = { virtual = "helpdesk-agent" }
 dependencies = [
     { name = "anthropic" },
     { name = "mcp" },
@@ -454,7 +454,7 @@ requires-dist = [
 [[package]]
 name = "helpdesk-eval"
 version = "0.1.0"
-source = { virtual = "exercise-4" }
+source = { virtual = "eval-harness" }
 dependencies = [
     { name = "anthropic" },
     { name = "mcp" },
@@ -473,7 +473,7 @@ requires-dist = [
 [[package]]
 name = "helpdesk-mcp"
 version = "0.1.0"
-source = { virtual = "exercise-1" }
+source = { virtual = "mcp-server" }
 dependencies = [
     { name = "mcp" },
     { name = "openai" },
@@ -496,7 +496,7 @@ requires-dist = [
 [[package]]
 name = "helpdesk-multi-agent"
 version = "0.1.0"
-source = { editable = "exercise-3" }
+source = { editable = "multi-agent" }
 dependencies = [
     { name = "anthropic" },
     { name = "flint-ai" },
