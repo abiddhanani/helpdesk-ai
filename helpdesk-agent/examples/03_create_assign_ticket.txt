@@ -1,0 +1,51 @@
+=== Scenario 3: Create a high-priority ticket and assign to the best available specialist ===
+
+> Create a new high-priority ticket for customer #3 about a network outage, find the best available network specialist, and assign it to them
+
+[REASON] I need to: (1) create the ticket, (2) find available network specialists,
+         (3) check their workloads to find the least loaded one, (4) assign the ticket.
+
+[ACT]    create_ticket({"title": "Network outage reported", "description": "Customer reporting a network outage affecting their operations. High priority - requires immediate network specialist attention.", "priority": "high", "category": "network", "customer_id": 3})
+
+[OBSERVE] create_ticket -> {"id": 36, "title": "Network outage reported", "priority":
+          "high", "category": "network", "status": "open", "customer_id": 3,
+          "sla_deadline": "2026-04-04T18:22:00", "created_at": "2026-04-04T10:22:00"}
+
+[REASON] Ticket #36 created. Now I need to find available network specialists.
+
+[ACT]    list_agents({"specialty": "network", "is_available": true})
+
+[OBSERVE] list_agents -> {"agents": [{"id": 1, "name": "Alice Chen", "specialty":
+          "network", "is_available": true, "max_tickets": 10}, {"id": 2, "name":
+          "Bob Martinez", "specialty": "network", "is_available": true,
+          "max_tickets": 8}], "count": 2}
+
+[REASON] Two available network specialists: Alice Chen (#1) and Bob Martinez (#2).
+         I need to check their current workloads to assign to the least loaded one.
+
+[ACT]    get_agent_workload({"agent_id": 1})
+
+[ACT]    get_agent_workload({"agent_id": 2})
+
+[OBSERVE] get_agent_workload -> {"agent": {"id": 1, "name": "Alice Chen"}, "open_tickets": 6, "max_tickets": 10, "capacity_remaining": 4}
+
+[OBSERVE] get_agent_workload -> {"agent": {"id": 2, "name": "Bob Martinez"}, "open_tickets": 3, "max_tickets": 8, "capacity_remaining": 5}
+
+[REASON] Bob Martinez has more remaining capacity (5 slots vs 4 for Alice).
+         I'll assign ticket #36 to Bob.
+
+[ACT]    assign_ticket({"ticket_id": 36, "agent_id": 2})
+
+[OBSERVE] assign_ticket -> {"ticket_id": 36, "agent_id": 2, "agent_name": "Bob Martinez",
+          "status": "open", "updated_at": "2026-04-04T10:22:15"}
+
+[ANSWER] Done. Here's a summary of what was completed:
+
+- Created ticket #36: "Network outage reported" (high priority, network category)
+  SLA deadline: 2026-04-04 18:22
+
+- Found 2 available network specialists and compared workloads:
+  - Alice Chen: 6/10 tickets (4 remaining)
+  - Bob Martinez: 3/8 tickets (5 remaining)
+
+- Assigned ticket #36 to Bob Martinez — he has the most available capacity.

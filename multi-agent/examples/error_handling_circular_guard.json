@@ -1,0 +1,155 @@
+{
+  "request": "There's an issue with ticket #12 but I'm not sure if it's a hardware or software problem — it started after an update but the hardware also seems faulty.",
+  "result": {
+    "trace_id": "circ0001",
+    "final_intent": "escalated",
+    "final_summary": "Escalated to senior agent Sarah K. after circular routing guard prevented re-triage. Ticket priority bumped to high due to ambiguous classification.",
+    "total_hops": 3,
+    "hops": [
+      {
+        "sender": "triage",
+        "intent": "route_to_resolution",
+        "confidence": 0.6,
+        "timestamp": "2026-04-03T14:00:00+00:00",
+        "payload": {
+          "summary": "Ticket classified as hardware/medium — ambiguous between hardware failure and software regression. Routing to Resolution for deeper investigation.",
+          "actions_taken": [
+            "get_ticket_details: ticket #12 retrieved",
+            "update_ticket: category=hardware, priority=medium",
+            "search_knowledge_base: no exact match found",
+            "add_comment: triage assessment documented"
+          ],
+          "ticket_id": 12
+        },
+        "trace_id": "circ0001"
+      },
+      {
+        "sender": "resolution",
+        "intent": "route_to_resolution",
+        "confidence": 0.45,
+        "timestamp": "2026-04-03T14:01:30+00:00",
+        "payload": {
+          "summary": "KB search inconclusive. Issue may be software-related — recommending re-triage with software category.",
+          "actions_taken": [
+            "get_ticket_details: full ticket + comments reviewed",
+            "search_knowledge_base: partial match on update regression",
+            "search_knowledge_base: no hardware match found"
+          ],
+          "ticket_id": 12
+        },
+        "trace_id": "circ0001"
+      },
+      {
+        "sender": "escalation",
+        "intent": "escalated",
+        "confidence": 0.95,
+        "timestamp": "2026-04-03T14:02:45+00:00",
+        "payload": {
+          "summary": "Circular routing guard triggered: Resolution attempted to re-route to Triage (already visited). Overridden to Escalation. Assigned to Sarah K. (lowest workload, generalist). Escalation comment left.",
+          "actions_taken": [
+            "get_ticket_details: ticket #12 reviewed",
+            "get_sla_report: no SLA breach imminent",
+            "list_agents: found Sarah K. — generalist, workload 3/10",
+            "assign_ticket: assigned to agent Sarah K.",
+            "add_comment: escalation rationale documented — ambiguous category, circular routing detected"
+          ],
+          "ticket_id": 12
+        },
+        "trace_id": "circ0001"
+      }
+    ]
+  },
+  "trace": [
+    {
+      "trace_id": "circ0001",
+      "timestamp": "2026-04-03T14:00:00+00:00",
+      "event_type": "hop_start",
+      "agent": "triage",
+      "task_preview": "There's an issue with ticket #12 but I'm not sure if it's a hardware or software problem"
+    },
+    {
+      "trace_id": "circ0001",
+      "timestamp": "2026-04-03T14:00:01+00:00",
+      "event_type": "tool_call",
+      "agent": "triage",
+      "tool": "get_ticket_details",
+      "params": {"ticket_id": 12}
+    },
+    {
+      "trace_id": "circ0001",
+      "timestamp": "2026-04-03T14:00:02+00:00",
+      "event_type": "tool_result",
+      "agent": "triage",
+      "tool": "get_ticket_details",
+      "summary": "Ticket #12: 'System crash after update' — status=open, priority=medium, category=other",
+      "is_error": false
+    },
+    {
+      "trace_id": "circ0001",
+      "timestamp": "2026-04-03T14:00:05+00:00",
+      "event_type": "tool_call",
+      "agent": "triage",
+      "tool": "search_knowledge_base",
+      "params": {"query": "hardware failure software update crash"}
+    },
+    {
+      "trace_id": "circ0001",
+      "timestamp": "2026-04-03T14:00:06+00:00",
+      "event_type": "tool_result",
+      "agent": "triage",
+      "tool": "search_knowledge_base",
+      "summary": "No exact match. Partial match: KB-003 (update rollback procedure)",
+      "is_error": false
+    },
+    {
+      "trace_id": "circ0001",
+      "timestamp": "2026-04-03T14:00:10+00:00",
+      "event_type": "hop_end",
+      "agent": "triage",
+      "intent": "route_to_resolution",
+      "confidence": 0.6,
+      "summary": "Ticket classified as hardware/medium — ambiguous between hardware failure and software regression. Routing to Resolution for deeper investigation."
+    },
+    {
+      "trace_id": "circ0001",
+      "timestamp": "2026-04-03T14:00:10+00:00",
+      "event_type": "routing_decision",
+      "from_agent": "triage",
+      "to_agent": "resolution",
+      "reason": "intent: route_to_resolution"
+    },
+    {
+      "trace_id": "circ0001",
+      "timestamp": "2026-04-03T14:01:30+00:00",
+      "event_type": "hop_end",
+      "agent": "resolution",
+      "intent": "route_to_resolution",
+      "confidence": 0.45,
+      "summary": "KB search inconclusive. Issue may be software-related — recommending re-triage with software category."
+    },
+    {
+      "trace_id": "circ0001",
+      "timestamp": "2026-04-03T14:01:30+00:00",
+      "event_type": "routing_decision",
+      "from_agent": "resolution",
+      "to_agent": "escalation",
+      "reason": "circular guard: triage already visited — overriding to escalation"
+    },
+    {
+      "trace_id": "circ0001",
+      "timestamp": "2026-04-03T14:02:45+00:00",
+      "event_type": "hop_end",
+      "agent": "escalation",
+      "intent": "escalated",
+      "confidence": 0.95,
+      "summary": "Assigned to Sarah K. Escalation comment documents circular routing trigger and ambiguous category."
+    },
+    {
+      "trace_id": "circ0001",
+      "timestamp": "2026-04-03T14:02:45+00:00",
+      "event_type": "final",
+      "outcome": "escalated",
+      "total_hops": 3
+    }
+  ]
+}

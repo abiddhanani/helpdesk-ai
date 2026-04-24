@@ -1,0 +1,49 @@
+=== Scenario 1: Find all critical tickets that have breached their SLA deadline ===
+
+> What are all the critical tickets that have breached their SLA deadline?
+
+[REASON] The user wants critical-priority tickets that are overdue on their SLA.
+         The search_tickets tool accepts both a priority filter and an sla_overdue flag,
+         so I can get exactly this in one call.
+
+[ACT]    search_tickets({"priority": "critical", "sla_overdue": true})
+
+[OBSERVE] search_tickets -> {"tickets": [{"id": 3, "title": "Production database server
+          unresponsive", "priority": "critical", "status": "in_progress", "category":
+          "database", "sla_deadline": "2026-03-29T08:00:00", "assigned_agent_id": 2},
+          {"id": 7, "title": "VPN access down for entire engineering team", "priority":
+          "critical", "status": "open", "category": "network", "sla_deadline":
+          "2026-03-30T14:30:00", "assigned_agent_id": null}, {"id": 12, "title":
+          "Security breach detected on file server", "priority": "critical", "status":
+          "open", "category": "security", "sla_deadline": "2026-03-31T09:00:00",
+          "assigned_agent_id": null}, {"id": 18, "title": "ERP system login failures
+          company-wide", "priority": "critical", "status": "in_progress", "category":
+          "software", "sla_deadline": "2026-03-31T16:00:00", "assigned_agent_id": 5},
+          {"id": 24, "title": "Core network switch failure in Building A", "priority":
+          "critical", "status": "open", "category": "network", "sla_deadline":
+          "2026-04-01T08:00:00", "assigned_agent_id": null}], "count": 5}
+
+[ANSWER] I found 5 critical tickets that have breached their SLA deadline:
+
+1. Ticket #3 — "Production database server unresponsive"
+   Category: Database | Status: In Progress | Assigned: Agent #2
+   SLA deadline: 2026-03-29 08:00 (overdue by 6 days)
+
+2. Ticket #7 — "VPN access down for entire engineering team"
+   Category: Network | Status: Open | Assigned: Unassigned
+   SLA deadline: 2026-03-30 14:30 (overdue by 5 days)
+
+3. Ticket #12 — "Security breach detected on file server"
+   Category: Security | Status: Open | Assigned: Unassigned
+   SLA deadline: 2026-03-31 09:00 (overdue by 4 days)
+
+4. Ticket #18 — "ERP system login failures company-wide"
+   Category: Software | Status: In Progress | Assigned: Agent #5
+   SLA deadline: 2026-03-31 16:00 (overdue by 4 days)
+
+5. Ticket #24 — "Core network switch failure in Building A"
+   Category: Network | Status: Open | Assigned: Unassigned
+   SLA deadline: 2026-04-01 08:00 (overdue by 3 days)
+
+Tickets #7, #12, and #24 are currently unassigned and overdue — these should be
+prioritized for immediate assignment.

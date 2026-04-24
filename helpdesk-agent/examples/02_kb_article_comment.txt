@@ -1,0 +1,51 @@
+=== Scenario 2: Find a KB article for a ticket and add it as a comment ===
+
+> Find a relevant knowledge base article for ticket #7 and add it as a comment with the suggested solution
+
+[REASON] I need to: (1) get ticket #7's details to understand the issue, then
+         (2) search the knowledge base for relevant articles, then (3) add the
+         best article as a comment. Let me start with the ticket details.
+
+[ACT]    get_ticket_details({"ticket_id": 7})
+
+[OBSERVE] get_ticket_details -> {"id": 7, "title": "VPN access down for entire
+          engineering team", "description": "All VPN connections failing since 09:00.
+          Error: 'Authentication server unreachable'. Affects ~40 engineers working
+          remotely.", "priority": "critical", "status": "open", "category": "network",
+          "customer_id": 5, "sla_deadline": "2026-03-30T14:30:00", "comments": []}
+
+[REASON] The ticket is about VPN authentication failure. I'll search the knowledge base
+         for articles about VPN troubleshooting or authentication issues.
+
+[ACT]    search_knowledge_base({"query": "VPN authentication failure troubleshooting"})
+
+[OBSERVE] search_knowledge_base -> {"articles": [{"id": 3, "title": "VPN Connectivity
+          Troubleshooting Guide", "category": "network", "tags": ["vpn", "authentication",
+          "remote-access"], "content": "## VPN Connectivity Troubleshooting Guide\n\n
+          **Common Causes:**\n1. RADIUS/LDAP authentication server down\n2. Certificate
+          expiry\n3. Firewall rule blocking UDP 1194\n\n**Resolution Steps:**\n
+          1. Check authentication server status: `ping radius.internal`\n
+          2. Verify certificates: `openssl x509 -in vpn.crt -noout -dates`\n
+          3. Restart VPN service: `systemctl restart openvpn`\n
+          4. Check firewall: `iptables -L | grep 1194`\n\nEscalate to network team
+          if unresolved within 30 minutes."}, ...], "count": 2}
+
+[REASON] Article #3 "VPN Connectivity Troubleshooting Guide" is directly relevant —
+         it covers authentication server issues, which matches the error in the ticket.
+         I'll add it as a comment to ticket #7.
+
+[ACT]    add_comment({"ticket_id": 7, "author_type": "agent", "author_id": 1, "content": "**Suggested Solution from KB Article #3: VPN Connectivity Troubleshooting Guide**\n\nBased on the error 'Authentication server unreachable', try the following steps:\n\n1. Check authentication server status: `ping radius.internal`\n2. Verify certificates: `openssl x509 -in vpn.crt -noout -dates`\n3. Restart VPN service: `systemctl restart openvpn`\n4. Check firewall rules: `iptables -L | grep 1194`\n\nEscalate to the network team if unresolved within 30 minutes."})
+
+[OBSERVE] add_comment -> {"id": 41, "ticket_id": 7, "author_type": "agent",
+          "content": "**Suggested Solution from KB...", "created_at": "2026-04-04T10:15:33"}
+
+[ANSWER] Done. I found KB article #3 "VPN Connectivity Troubleshooting Guide" which
+directly addresses the authentication server issue described in ticket #7.
+
+The article has been added as comment #41 on the ticket with the following resolution steps:
+1. Check if the RADIUS/LDAP authentication server is reachable
+2. Verify VPN certificates are not expired
+3. Restart the VPN service
+4. Inspect firewall rules for UDP port 1194
+
+These steps should help resolve the "Authentication server unreachable" error.

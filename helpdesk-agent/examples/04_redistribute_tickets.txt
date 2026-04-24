@@ -1,0 +1,83 @@
+=== Scenario 4: Redistribute all open tickets assigned to an overloaded agent ===
+
+> Find all open tickets assigned to agent #1 (Alice Chen) and redistribute them among other available network specialists
+
+[REASON] I need to: (1) find all open tickets assigned to agent #1, (2) find other
+         available network specialists, (3) check their workloads, (4) reassign each
+         ticket to the agent with the most remaining capacity.
+
+[ACT]    search_tickets({"assigned_agent_id": 1, "status": "open"})
+
+[OBSERVE] search_tickets -> {"tickets": [{"id": 5, "title": "Intermittent WiFi drops
+          in conference rooms", "priority": "medium", "category": "network"},
+          {"id": 9, "title": "Switch port not passing traffic in rack B4", "priority":
+          "high", "category": "network"}, {"id": 14, "title": "DNS resolution failing
+          for internal hostnames", "priority": "high", "category": "network"},
+          {"id": 22, "title": "Firewall rule blocking internal API calls", "priority":
+          "medium", "category": "network"}, {"id": 28, "title": "Load balancer health
+          checks timing out", "priority": "high", "category": "network"},
+          {"id": 33, "title": "VLAN misconfiguration on floor 3 switches", "priority":
+          "low", "category": "network"}], "count": 6}
+
+[REASON] Alice has 6 open tickets. Now I need to find other available network specialists
+         to redistribute these to.
+
+[ACT]    list_agents({"specialty": "network", "is_available": true})
+
+[OBSERVE] list_agents -> {"agents": [{"id": 2, "name": "Bob Martinez", "specialty":
+          "network", "is_available": true, "max_tickets": 8}, {"id": 6, "name":
+          "David Kim", "specialty": "network", "is_available": true,
+          "max_tickets": 10}], "count": 2}
+
+[REASON] Two other available network specialists: Bob Martinez (#2) and David Kim (#6).
+         I need to check their current workloads before distributing tickets.
+
+[ACT]    get_agent_workload({"agent_id": 2})
+
+[ACT]    get_agent_workload({"agent_id": 6})
+
+[OBSERVE] get_agent_workload -> {"agent": {"id": 2, "name": "Bob Martinez"}, "open_tickets": 4, "max_tickets": 8, "capacity_remaining": 4}
+
+[OBSERVE] get_agent_workload -> {"agent": {"id": 6, "name": "David Kim"}, "open_tickets": 2, "max_tickets": 10, "capacity_remaining": 8}
+
+[REASON] David Kim has 8 slots remaining, Bob has 4. I'll distribute the 6 tickets
+         proportionally: David gets 4 tickets (prioritizing high-priority ones),
+         Bob gets 2. I'll assign them in order of priority (high first).
+
+[ACT]    assign_ticket({"ticket_id": 9, "agent_id": 6})
+
+[OBSERVE] assign_ticket -> {"ticket_id": 9, "agent_id": 6, "agent_name": "David Kim"}
+
+[ACT]    assign_ticket({"ticket_id": 14, "agent_id": 6})
+
+[OBSERVE] assign_ticket -> {"ticket_id": 14, "agent_id": 6, "agent_name": "David Kim"}
+
+[ACT]    assign_ticket({"ticket_id": 28, "agent_id": 6})
+
+[OBSERVE] assign_ticket -> {"ticket_id": 28, "agent_id": 6, "agent_name": "David Kim"}
+
+[ACT]    assign_ticket({"ticket_id": 5, "agent_id": 6})
+
+[OBSERVE] assign_ticket -> {"ticket_id": 5, "agent_id": 6, "agent_name": "David Kim"}
+
+[ACT]    assign_ticket({"ticket_id": 22, "agent_id": 2})
+
+[OBSERVE] assign_ticket -> {"ticket_id": 22, "agent_id": 2, "agent_name": "Bob Martinez"}
+
+[ACT]    assign_ticket({"ticket_id": 33, "agent_id": 2})
+
+[OBSERVE] assign_ticket -> {"ticket_id": 33, "agent_id": 2, "agent_name": "Bob Martinez"}
+
+[ANSWER] Redistribution complete. Alice Chen's 6 open tickets have been reassigned:
+
+Assigned to David Kim (had 2/10 tickets, now 6/10):
+  - Ticket #9: "Switch port not passing traffic in rack B4" (high)
+  - Ticket #14: "DNS resolution failing for internal hostnames" (high)
+  - Ticket #28: "Load balancer health checks timing out" (high)
+  - Ticket #5: "Intermittent WiFi drops in conference rooms" (medium)
+
+Assigned to Bob Martinez (had 4/8 tickets, now 6/8):
+  - Ticket #22: "Firewall rule blocking internal API calls" (medium)
+  - Ticket #33: "VLAN misconfiguration on floor 3 switches" (low)
+
+High-priority tickets were sent to David who had the most available capacity.

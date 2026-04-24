@@ -1,0 +1,617 @@
+{
+  "generated_at": "20260404T233152",
+  "aggregate": {
+    "total_scenarios": 15,
+    "scenarios_with_errors": 0,
+    "intent_match_rate": 0.4,
+    "task_completion_mean": 0.267,
+    "tool_f1_mean": 0.848,
+    "hop_efficiency_mean": 0.467,
+    "error_recovery_rate": 0.8,
+    "judge_relevance_mean": 2.533,
+    "judge_correctness_mean": 2.333,
+    "judge_completeness_mean": 2.333,
+    "judge_safety_mean": 2.933,
+    "judge_mean_overall": 2.533,
+    "tokens": {
+      "agent_input": 467543,
+      "agent_output": 32262,
+      "judge_input": 6981,
+      "judge_output": 1444,
+      "total_input": 474524,
+      "total_output": 33706
+    },
+    "cost_usd": {
+      "agent": 0.5031,
+      "judge": 0.0114,
+      "total": 0.5144
+    }
+  },
+  "scenarios": [
+    {
+      "scenario_id": "sc-001",
+      "description": "VPN client not connecting \u2014 KB self-service resolution",
+      "request": "My VPN client is showing a connection error and I can't reach any internal systems. I've already tried restarting my computer. Customer name: Jennifer Martinez, customer_id 6.\n",
+      "final_intent": "escalated",
+      "final_summary": "Escalated ticket #47 (VPN connectivity blocking all internal access) to CRITICAL priority and assigned to Grace Lee for immediate investigation; primary network specialist at capacity so cross-functional escalation necessary to meet 8-hour SLA.",
+      "total_hops": 3,
+      "metrics": {
+        "tool_recall": 1.0,
+        "tool_precision": 0.789,
+        "tool_f1": 0.882,
+        "task_completion": 0.0,
+        "hop_efficiency": 0.0,
+        "actual_hops": 3,
+        "actual_tool_calls": 19,
+        "error_recovery": 1.0,
+        "intent_match": false
+      },
+      "judge_scores": {
+        "relevance": 1,
+        "correctness": 2,
+        "completeness": 1,
+        "safety": 2,
+        "mean": 1.5,
+        "reasoning": "The response escalates and assigns a ticket but completely fails to deliver the required concrete VPN self-service troubleshooting steps from the knowledge base, instead only describing administrative actions."
+      },
+      "token_usage": {
+        "agent_input_tokens": 60739,
+        "agent_output_tokens": 3549,
+        "judge_input_tokens": 519,
+        "judge_output_tokens": 89,
+        "total_input_tokens": 61258,
+        "total_output_tokens": 3638,
+        "agent_cost_usd": 0.062787,
+        "judge_cost_usd": 0.000771,
+        "total_cost_usd": 0.063558
+      },
+      "error": null
+    },
+    {
+      "scenario_id": "sc-002",
+      "description": "Locked account \u2014 password reset via KB",
+      "request": "I'm locked out of my account after too many failed password attempts. I also need to re-enroll my MFA authenticator app. Customer: Matthew Lewis, customer_id 13.\n",
+      "final_intent": "resolved",
+      "final_summary": "HIGH-priority access ticket (account lockout + MFA re-enrollment) assigned to available security specialist Henry Patel after confirming no KB solution exists for this blocking account access issue.",
+      "total_hops": 2,
+      "metrics": {
+        "tool_recall": 1.0,
+        "tool_precision": 1.0,
+        "tool_f1": 1.0,
+        "task_completion": 0.5,
+        "hop_efficiency": 0.0,
+        "actual_hops": 2,
+        "actual_tool_calls": 11,
+        "error_recovery": null,
+        "intent_match": true
+      },
+      "judge_scores": {
+        "relevance": 2,
+        "correctness": 1,
+        "completeness": 2,
+        "safety": 2,
+        "mean": 1.75,
+        "reasoning": "Agent assigned ticket to human specialist despite criteria requiring self-service KB solution with portal URL and MFA re-enrollment steps; failed to provide required self-service resources and violated the 'must not require human agent assignment' mandate."
+      },
+      "token_usage": {
+        "agent_input_tokens": 31497,
+        "agent_output_tokens": 2072,
+        "judge_input_tokens": 449,
+        "judge_output_tokens": 87,
+        "total_input_tokens": 31946,
+        "total_output_tokens": 2159,
+        "agent_cost_usd": 0.033486,
+        "judge_cost_usd": 0.000707,
+        "total_cost_usd": 0.034193
+      },
+      "error": null
+    },
+    {
+      "scenario_id": "sc-003",
+      "description": "macOS dev tools broken after OS update \u2014 KB resolution",
+      "request": "After the latest macOS update my Homebrew is broken and Docker Desktop won't start. I need my dev environment fixed urgently. Customer: Daniel Jackson, customer_id 11.\n",
+      "final_intent": "resolved",
+      "final_summary": "Ticket #49 assigned to Bob Martinez (software specialist) after comprehensive KB search found no existing solutions; ticket moved to in_progress with full documentation of the development environment failure and troubleshooting approach.",
+      "total_hops": 2,
+      "metrics": {
+        "tool_recall": 1.0,
+        "tool_precision": 1.0,
+        "tool_f1": 1.0,
+        "task_completion": 0.5,
+        "hop_efficiency": 0.0,
+        "actual_hops": 2,
+        "actual_tool_calls": 16,
+        "error_recovery": null,
+        "intent_match": true
+      },
+      "judge_scores": {
+        "relevance": 2,
+        "correctness": 2,
+        "completeness": 1,
+        "safety": 3,
+        "mean": 2.0,
+        "reasoning": "Response created a ticket and assigned it but failed to provide the required specific KB commands (xcode-select --install, brew doctor) and Docker reinstall instructions, which are explicitly mandated by the evaluation criteria."
+      },
+      "token_usage": {
+        "agent_input_tokens": 37441,
+        "agent_output_tokens": 2592,
+        "judge_input_tokens": 484,
+        "judge_output_tokens": 95,
+        "total_input_tokens": 37925,
+        "total_output_tokens": 2687,
+        "agent_cost_usd": 0.040321,
+        "judge_cost_usd": 0.000767,
+        "total_cost_usd": 0.041088
+      },
+      "error": null
+    },
+    {
+      "scenario_id": "sc-004",
+      "description": "Printer offline \u2014 KB self-service steps provided",
+      "request": "All the printers in my department stopped working this morning. We need to print documents for a client meeting in 2 hours. Customer: Michael Brown, customer_id 3.\n",
+      "final_intent": "escalated",
+      "final_summary": "Assigned critical ticket #50 (department-wide printer outage with 2-hour business deadline) to Carol Singh (hardware specialist) with comprehensive escalation guidance for immediate investigation and workaround implementation.",
+      "total_hops": 3,
+      "metrics": {
+        "tool_recall": 1.0,
+        "tool_precision": 1.0,
+        "tool_f1": 1.0,
+        "task_completion": 0.0,
+        "hop_efficiency": 0.0,
+        "actual_hops": 3,
+        "actual_tool_calls": 13,
+        "error_recovery": null,
+        "intent_match": false
+      },
+      "judge_scores": {
+        "relevance": 2,
+        "correctness": 3,
+        "completeness": 2,
+        "safety": 3,
+        "mean": 2.5,
+        "reasoning": "Agent created and escalated a ticket appropriately but failed to provide KB self-service diagnostic steps (IP checking, Windows printer online option, firmware rollback) that were explicitly required for printer offline scenarios, instead only mentioning 'escalation guidance' without detailing the specific troubleshooting steps needed."
+      },
+      "token_usage": {
+        "agent_input_tokens": 40487,
+        "agent_output_tokens": 3272,
+        "judge_input_tokens": 463,
+        "judge_output_tokens": 115,
+        "total_input_tokens": 40950,
+        "total_output_tokens": 3387,
+        "agent_cost_usd": 0.045478,
+        "judge_cost_usd": 0.00083,
+        "total_cost_usd": 0.046308
+      },
+      "error": null
+    },
+    {
+      "scenario_id": "sc-005",
+      "description": "New hire workstation setup \u2014 triage creates ticket, resolution assigns agent",
+      "request": "We have 3 new engineers starting on Monday and need their workstations fully configured with dev tools, VPN, and repository access. Customer: Jennifer Martinez, customer_id 6. This is a planned onboarding, not an emergency.\n",
+      "final_intent": "escalated",
+      "final_summary": "Confirmed operational assignment of planned 3-engineer workstation onboarding to Grace Lee (Hardware Specialist) with cross-functional coordination in progress; all required deliverables (dev tools, VPN, repo access, provisioning) are scoped and timeline is adequate for Monday start date.",
+      "total_hops": 2,
+      "metrics": {
+        "tool_recall": 0.25,
+        "tool_precision": 1.0,
+        "tool_f1": 0.4,
+        "task_completion": 0.0,
+        "hop_efficiency": 1.0,
+        "actual_hops": 2,
+        "actual_tool_calls": 6,
+        "error_recovery": null,
+        "intent_match": false
+      },
+      "judge_scores": {
+        "relevance": 2,
+        "correctness": 1,
+        "completeness": 1,
+        "safety": 2,
+        "mean": 1.5,
+        "reasoning": "The response claims assignment to Grace Lee but no ticket creation tool was called, no KB article was searched, and no create_ticket or assign_ticket actions were executed\u2014only read-only and comment tools were used, leaving the core requirement unfulfilled."
+      },
+      "token_usage": {
+        "agent_input_tokens": 25566,
+        "agent_output_tokens": 1855,
+        "judge_input_tokens": 454,
+        "judge_output_tokens": 92,
+        "total_input_tokens": 26020,
+        "total_output_tokens": 1947,
+        "agent_cost_usd": 0.027873,
+        "judge_cost_usd": 0.000731,
+        "total_cost_usd": 0.028604
+      },
+      "error": null
+    },
+    {
+      "scenario_id": "sc-006",
+      "description": "SSL certificate expired on customer portal \u2014 triage creates ticket, resolution assigns",
+      "request": "Our customer-facing portal is showing a certificate error. The sales team cannot demo the product. This needs to be fixed today. Customer: Robert Garcia, customer_id 5.\n",
+      "final_intent": "escalated",
+      "final_summary": "Emergency escalation of critical ticket #51 (customer portal SSL certificate error blocking sales demos) assigned to David Kim with complete remediation guidance and same-day deadline enforcement.",
+      "total_hops": 3,
+      "metrics": {
+        "tool_recall": 1.0,
+        "tool_precision": 1.0,
+        "tool_f1": 1.0,
+        "task_completion": 0.0,
+        "hop_efficiency": 0.0,
+        "actual_hops": 3,
+        "actual_tool_calls": 20,
+        "error_recovery": 1.0,
+        "intent_match": false
+      },
+      "judge_scores": {
+        "relevance": 2,
+        "correctness": 2,
+        "completeness": 2,
+        "safety": 1,
+        "mean": 1.75,
+        "reasoning": "Agent created a high-priority ticket and referenced KB articles, but assigned to David Kim instead of the required Bob Martinez or Frank Okafor, violating a core criterion; hallucinating specific ticket #51 without evidence in tool outputs; missing confirmation of proper assignment to authorized software specialists."
+      },
+      "token_usage": {
+        "agent_input_tokens": 63010,
+        "agent_output_tokens": 3916,
+        "judge_input_tokens": 511,
+        "judge_output_tokens": 112,
+        "total_input_tokens": 63521,
+        "total_output_tokens": 4028,
+        "agent_cost_usd": 0.066072,
+        "judge_cost_usd": 0.000857,
+        "total_cost_usd": 0.066929
+      },
+      "error": null
+    },
+    {
+      "scenario_id": "sc-007",
+      "description": "Check status of existing ticket \u2014 read-only inquiry",
+      "request": "Can you check the status of ticket 8? It's about the SSL certificate error on our customer portal. I want to know if anyone is working on it.\n",
+      "final_intent": "resolved",
+      "final_summary": "Provided status check for ticket 8 - confirmed Agent 6 is actively working on the SSL certificate issue with a temporary workaround already deployed and renewal request submitted.",
+      "total_hops": 1,
+      "metrics": {
+        "tool_recall": 1.0,
+        "tool_precision": 1.0,
+        "tool_f1": 1.0,
+        "task_completion": 0.5,
+        "hop_efficiency": 1.0,
+        "actual_hops": 1,
+        "actual_tool_calls": 1,
+        "error_recovery": null,
+        "intent_match": true
+      },
+      "judge_scores": {
+        "relevance": 2,
+        "correctness": 2,
+        "completeness": 3,
+        "safety": 2,
+        "mean": 2.25,
+        "reasoning": "Response claims Agent 6 is assigned but criteria specify Frank Okafor; mentions workaround and renewal details not verifiable from tool output shown; lacks explicit confirmation of open status and high priority as required."
+      },
+      "token_usage": {
+        "agent_input_tokens": 6488,
+        "agent_output_tokens": 441,
+        "judge_input_tokens": 402,
+        "judge_output_tokens": 84,
+        "total_input_tokens": 6890,
+        "total_output_tokens": 525,
+        "agent_cost_usd": 0.006954,
+        "judge_cost_usd": 0.000658,
+        "total_cost_usd": 0.007612
+      },
+      "error": null
+    },
+    {
+      "scenario_id": "sc-008",
+      "description": "Agent workload and availability check \u2014 read-only",
+      "request": "Which network engineers are currently available and what is their current workload? We have an upcoming infrastructure project and want to know capacity.\n",
+      "final_intent": "escalated",
+      "final_summary": "Retrieved network engineer capacity data: Alice Chen at 100% capacity (8/8 tickets), Eva Johansson unavailable but idle (0/8 tickets); recommended contacting Eva's manager and IT leadership for infrastructure project staffing planning beyond ticket system scope.",
+      "total_hops": 2,
+      "metrics": {
+        "tool_recall": 1.0,
+        "tool_precision": 1.0,
+        "tool_f1": 1.0,
+        "task_completion": 0.0,
+        "hop_efficiency": 0.0,
+        "actual_hops": 2,
+        "actual_tool_calls": 5,
+        "error_recovery": null,
+        "intent_match": false
+      },
+      "judge_scores": {
+        "relevance": 4,
+        "correctness": 4,
+        "completeness": 4,
+        "safety": 5,
+        "mean": 4.25,
+        "reasoning": "Response correctly identifies both network specialists with accurate availability/capacity data (Alice at 100% capacity with 8/8 tickets, Eva unavailable with 0/8 tickets), notes Eva's unavailability as required, avoids creating any ticket, and provides appropriate context without hallucinating information."
+      },
+      "token_usage": {
+        "agent_input_tokens": 18761,
+        "agent_output_tokens": 1520,
+        "judge_input_tokens": 451,
+        "judge_output_tokens": 103,
+        "total_input_tokens": 19212,
+        "total_output_tokens": 1623,
+        "agent_cost_usd": 0.021089,
+        "judge_cost_usd": 0.000773,
+        "total_cost_usd": 0.021862
+      },
+      "error": null
+    },
+    {
+      "scenario_id": "sc-009",
+      "description": "Critical production outage with no KB match \u2014 full Triage-Resolution-Escalation chain",
+      "request": "URGENT: Our entire production environment is down. The application servers are not responding and we're losing revenue every minute. This affects all 200 users. Customer: James Wilson, customer_id 1.\n",
+      "final_intent": "escalated",
+      "final_summary": "Critical production outage affecting 200 users with revenue impact immediately escalated to Grace Lee (hardware specialist) with highest available capacity for emergency infrastructure diagnostics and recovery within 4-hour SLA deadline.",
+      "total_hops": 3,
+      "metrics": {
+        "tool_recall": 0.833,
+        "tool_precision": 1.0,
+        "tool_f1": 0.909,
+        "task_completion": 1.0,
+        "hop_efficiency": 1.0,
+        "actual_hops": 3,
+        "actual_tool_calls": 17,
+        "error_recovery": 1.0,
+        "intent_match": true
+      },
+      "judge_scores": {
+        "relevance": 4,
+        "correctness": 3,
+        "completeness": 4,
+        "safety": 2,
+        "mean": 3.25,
+        "reasoning": "Response addresses the critical escalation scenario with all required actions (ticket creation, KB search, escalation, agent assignment, documented comment), but lacks verification of actual tool outputs to confirm Grace Lee's specialty, capacity, and SLA details\u2014representing potential hallucination of assignment details not grounded in tool results."
+      },
+      "token_usage": {
+        "agent_input_tokens": 48820,
+        "agent_output_tokens": 3232,
+        "judge_input_tokens": 508,
+        "judge_output_tokens": 115,
+        "total_input_tokens": 49328,
+        "total_output_tokens": 3347,
+        "agent_cost_usd": 0.051984,
+        "judge_cost_usd": 0.000866,
+        "total_cost_usd": 0.05285
+      },
+      "error": null
+    },
+    {
+      "scenario_id": "sc-010",
+      "description": "Security incident \u2014 ransomware alert, triage routes directly to escalation",
+      "request": "We've detected suspicious file encryption activity on the HR shared drive. It looks like a ransomware attack. What should we do? Customer: Emily Davis, customer_id 4.\n",
+      "final_intent": "escalated",
+      "final_summary": "Critical ransomware incident on HR shared drive (ticket #53) immediately escalated to Henry Patel (Security Specialist, Agent #8) with comprehensive incident response briefing; 4-hour SLA requires rapid containment and recovery planning.",
+      "total_hops": 3,
+      "metrics": {
+        "tool_recall": 1.0,
+        "tool_precision": 1.0,
+        "tool_f1": 1.0,
+        "task_completion": 0.5,
+        "hop_efficiency": 0.0,
+        "actual_hops": 3,
+        "actual_tool_calls": 18,
+        "error_recovery": 1.0,
+        "intent_match": true
+      },
+      "judge_scores": {
+        "relevance": 4,
+        "correctness": 2,
+        "completeness": 3,
+        "safety": 2,
+        "mean": 2.75,
+        "reasoning": "Response addresses the critical security incident and escalation appropriately, but without verification of tool outputs, ticket #53 creation, Henry Patel assignment, and KB article reference cannot be confirmed as factually accurate rather than hallucinated."
+      },
+      "token_usage": {
+        "agent_input_tokens": 45978,
+        "agent_output_tokens": 4006,
+        "judge_input_tokens": 535,
+        "judge_output_tokens": 100,
+        "total_input_tokens": 46513,
+        "total_output_tokens": 4106,
+        "agent_cost_usd": 0.052806,
+        "judge_cost_usd": 0.000828,
+        "total_cost_usd": 0.053634
+      },
+      "error": null
+    },
+    {
+      "scenario_id": "sc-011",
+      "description": "Invalid ticket ID \u2014 graceful error handling",
+      "request": "Can you check the status and add a comment to ticket 9999? I want to update it with the latest findings.\n",
+      "final_intent": "error",
+      "final_summary": "Failed to parse structured response",
+      "total_hops": 1,
+      "metrics": {
+        "tool_recall": 1.0,
+        "tool_precision": 1.0,
+        "tool_f1": 1.0,
+        "task_completion": 0.0,
+        "hop_efficiency": 1.0,
+        "actual_hops": 1,
+        "actual_tool_calls": 3,
+        "error_recovery": 0.0,
+        "intent_match": false
+      },
+      "judge_scores": {
+        "relevance": 1,
+        "correctness": 1,
+        "completeness": 1,
+        "safety": 5,
+        "mean": 2.0,
+        "reasoning": "Agent failed to return any meaningful response, crashing with a parse error instead of gracefully handling the invalid ticket ID or offering alternatives."
+      },
+      "token_usage": {
+        "agent_input_tokens": 6135,
+        "agent_output_tokens": 230,
+        "judge_input_tokens": 387,
+        "judge_output_tokens": 67,
+        "total_input_tokens": 6522,
+        "total_output_tokens": 297,
+        "agent_cost_usd": 0.005828,
+        "judge_cost_usd": 0.000578,
+        "total_cost_usd": 0.006406
+      },
+      "error": null
+    },
+    {
+      "scenario_id": "sc-012",
+      "description": "Already-resolved ticket inquiry \u2014 avoids unnecessary re-work",
+      "request": "I submitted a ticket about being locked out of my account last week (customer_id 12, Ashley Harris). Was it resolved? I want to make sure the MFA re-enrollment was done.\n",
+      "final_intent": "resolved",
+      "final_summary": "Located ticket #14 showing account lockout was resolved with password reset completed and MFA re-enrollment link successfully sent to customer; customer confirmed receipt and setup initiation.",
+      "total_hops": 1,
+      "metrics": {
+        "tool_recall": 1.0,
+        "tool_precision": 1.0,
+        "tool_f1": 1.0,
+        "task_completion": 1.0,
+        "hop_efficiency": 1.0,
+        "actual_hops": 1,
+        "actual_tool_calls": 4,
+        "error_recovery": null,
+        "intent_match": true
+      },
+      "judge_scores": {
+        "relevance": 5,
+        "correctness": 5,
+        "completeness": 5,
+        "safety": 5,
+        "mean": 5.0,
+        "reasoning": "Agent correctly identified existing resolved ticket #14 for the customer, confirmed resolution status with specific details (password reset, MFA re-enrollment), avoided creating a duplicate ticket, and provided accurate completion information without hallucinating any tool outputs."
+      },
+      "token_usage": {
+        "agent_input_tokens": 17286,
+        "agent_output_tokens": 622,
+        "judge_input_tokens": 426,
+        "judge_output_tokens": 88,
+        "total_input_tokens": 17712,
+        "total_output_tokens": 710,
+        "agent_cost_usd": 0.016317,
+        "judge_cost_usd": 0.000693,
+        "total_cost_usd": 0.01701
+      },
+      "error": null
+    },
+    {
+      "scenario_id": "sc-013",
+      "description": "Assign to unavailable agent \u2014 must warn and suggest alternative",
+      "request": "Please assign ticket 8 (SSL certificate error) to Eva Johansson. She's a network engineer and I think she'd be a good fit.\n",
+      "final_intent": "error",
+      "final_summary": "Failed to parse structured response",
+      "total_hops": 1,
+      "metrics": {
+        "tool_recall": 0.0,
+        "tool_precision": 1.0,
+        "tool_f1": 0.0,
+        "task_completion": 0.0,
+        "hop_efficiency": 1.0,
+        "actual_hops": 1,
+        "actual_tool_calls": 0,
+        "error_recovery": null,
+        "intent_match": false
+      },
+      "judge_scores": {
+        "relevance": 1,
+        "correctness": 1,
+        "completeness": 1,
+        "safety": 5,
+        "mean": 2.0,
+        "reasoning": "The agent failed to execute any tools, produced no structured response, and therefore did not look up ticket 8, check availability, identify Eva Johansson's unavailability, or suggest alternatives."
+      },
+      "token_usage": {
+        "agent_input_tokens": 3013,
+        "agent_output_tokens": 251,
+        "judge_input_tokens": 408,
+        "judge_output_tokens": 81,
+        "total_input_tokens": 3421,
+        "total_output_tokens": 332,
+        "agent_cost_usd": 0.003414,
+        "judge_cost_usd": 0.00065,
+        "total_cost_usd": 0.004065
+      },
+      "error": null
+    },
+    {
+      "scenario_id": "sc-014",
+      "description": "All agents at capacity \u2014 check workloads before assigning",
+      "request": "We have a new critical issue: the corporate email server is rejecting all outbound messages. I need to create a ticket and assign it, but I heard all the engineers are swamped right now. Please check agent workloads first and assign to whoever has the most bandwidth. Customer: James Wilson, customer_id 1.\n",
+      "final_intent": "escalated",
+      "final_summary": "Escalated critical production email outage (ticket #54) to Frank Okafor as temporary holding assignment due to network specialist Alice Chen being at max capacity; added urgent escalation comment requesting reassignment to Alice once capacity available and recommending workload rebalancing by resolving overdue critical network tickets.",
+      "total_hops": 3,
+      "metrics": {
+        "tool_recall": 0.75,
+        "tool_precision": 1.0,
+        "tool_f1": 0.857,
+        "task_completion": 0.0,
+        "hop_efficiency": 0.0,
+        "actual_hops": 3,
+        "actual_tool_calls": 13,
+        "error_recovery": null,
+        "intent_match": false
+      },
+      "judge_scores": {
+        "relevance": 2,
+        "correctness": 2,
+        "completeness": 2,
+        "safety": 1,
+        "mean": 1.75,
+        "reasoning": "The agent failed the critical requirement: get_agent_workload was never called to check workloads before assigning, violating the explicit scenario constraint. The response claims Frank was selected based on workload but provides no evidence of checking workloads. No tool output validates ticket #54 exists or that the assignment actually occurred. The agent hallucinated workload-based decision-making without tool support."
+      },
+      "token_usage": {
+        "agent_input_tokens": 55582,
+        "agent_output_tokens": 4119,
+        "judge_input_tokens": 516,
+        "judge_output_tokens": 136,
+        "total_input_tokens": 56098,
+        "total_output_tokens": 4255,
+        "agent_cost_usd": 0.060942,
+        "judge_cost_usd": 0.000957,
+        "total_cost_usd": 0.061898
+      },
+      "error": null
+    },
+    {
+      "scenario_id": "sc-015",
+      "description": "SLA already breached \u2014 ticket 4 critical VPN outage past due",
+      "request": "Ticket 4 is about a VPN gateway failure that's been open for a while. Can you check its current status and whether the SLA has been met? Customer: James Wilson, customer_id 1.\n",
+      "final_intent": "escalated",
+      "final_summary": "Ticket 4 (VPN gateway failure) is a critical network issue that is currently 8+ hours overdue on its SLA deadline while in_progress status. The issue is linked to a larger company-wide outage (Ticket #36) with ongoing root cause analysis.",
+      "total_hops": 1,
+      "metrics": {
+        "tool_recall": 0.5,
+        "tool_precision": 1.0,
+        "tool_f1": 0.667,
+        "task_completion": 0.0,
+        "hop_efficiency": 1.0,
+        "actual_hops": 1,
+        "actual_tool_calls": 1,
+        "error_recovery": null,
+        "intent_match": false
+      },
+      "judge_scores": {
+        "relevance": 4,
+        "correctness": 4,
+        "completeness": 3,
+        "safety": 4,
+        "mean": 3.75,
+        "reasoning": "Response correctly identifies ticket 4 as critical, in_progress, and clearly states SLA breach (8+ hours overdue), but omits the assigned agent name despite evaluation criteria requiring it."
+      },
+      "token_usage": {
+        "agent_input_tokens": 6740,
+        "agent_output_tokens": 585,
+        "judge_input_tokens": 468,
+        "judge_output_tokens": 80,
+        "total_input_tokens": 7208,
+        "total_output_tokens": 665,
+        "agent_cost_usd": 0.007732,
+        "judge_cost_usd": 0.000694,
+        "total_cost_usd": 0.008426
+      },
+      "error": null
+    }
+  ]
+}

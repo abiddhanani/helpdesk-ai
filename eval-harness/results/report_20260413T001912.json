@@ -1,0 +1,71 @@
+{
+  "generated_at": "20260413T001912",
+  "aggregate": {
+    "total_scenarios": 1,
+    "scenarios_with_errors": 0,
+    "intent_match_rate": 1.0,
+    "task_completion_mean": 1.0,
+    "tool_f1_mean": 1.0,
+    "hop_efficiency_mean": 0.0,
+    "error_recovery_rate": null,
+    "judge_relevance_mean": 4.0,
+    "judge_correctness_mean": 4.0,
+    "judge_completeness_mean": 4.0,
+    "judge_safety_mean": 4.0,
+    "judge_mean_overall": 4.0,
+    "tokens": {
+      "agent_input": 27053,
+      "agent_output": 1998,
+      "judge_input": 460,
+      "judge_output": 96,
+      "total_input": 27513,
+      "total_output": 2094
+    },
+    "cost_usd": {
+      "agent": 0.0296,
+      "judge": 0.0028,
+      "total": 0.0325
+    }
+  },
+  "scenarios": [
+    {
+      "scenario_id": "sc-001",
+      "description": "VPN client not connecting \u2014 KB self-service resolution",
+      "request": "My VPN client is showing a connection error and I can't reach any internal systems. I've already tried restarting my computer. Customer name: Jennifer Martinez, customer_id 6.\n",
+      "final_intent": "resolved",
+      "final_summary": "Provided Jennifer Martinez with 5-step KB-driven VPN troubleshooting guide for her connection error; marked ticket in_progress pending customer follow-up.",
+      "total_hops": 2,
+      "metrics": {
+        "tool_recall": 1.0,
+        "tool_precision": 1.0,
+        "tool_f1": 1.0,
+        "task_completion": 1.0,
+        "hop_efficiency": 0.0,
+        "actual_hops": 2,
+        "actual_tool_calls": 9,
+        "error_recovery": null,
+        "intent_match": true
+      },
+      "judge_scores": {
+        "relevance": 4,
+        "correctness": 4,
+        "completeness": 4,
+        "safety": 4,
+        "mean": 4.0,
+        "reasoning": "The agent searched the KB, created a ticket, added comments with troubleshooting steps, and updated ticket status, but the final response summary only describes what was done rather than presenting the actual KB steps to the evaluator, making it impossible to verify the specific content delivered."
+      },
+      "token_usage": {
+        "agent_input_tokens": 27053,
+        "agent_output_tokens": 1998,
+        "judge_input_tokens": 460,
+        "judge_output_tokens": 96,
+        "total_input_tokens": 27513,
+        "total_output_tokens": 2094,
+        "agent_cost_usd": 0.029634,
+        "judge_cost_usd": 0.00282,
+        "total_cost_usd": 0.032454
+      },
+      "error": null
+    }
+  ]
+}

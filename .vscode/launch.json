@@ -1,0 +1,49 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "helpdesk-agent",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src.main",
+      "python": "${workspaceFolder}/.venv/bin/python",
+      "cwd": "${workspaceFolder}/helpdesk-agent",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/helpdesk-agent"
+      }
+    },
+    {
+      "name": "multi-agent",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src.main",
+      "python": "${workspaceFolder}/.venv/bin/python",
+      "cwd": "${workspaceFolder}/multi-agent",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/multi-agent"
+      }
+    },
+   {
+      "name": "eval-harness",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/eval-harness/src/harness.py",
+      "python": "${workspaceFolder}/eval-harness/.venv/bin/python",
+      "cwd": "${workspaceFolder}/eval-harness",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/eval-harness"
+      }
+    },
+    {
+      "name": "mcp-server",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src.server",
+      "python": "${workspaceFolder}/.venv/bin/python",
+      "cwd": "${workspaceFolder}/mcp-server",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/mcp-server"
+      }
+    }
+  ]
+}

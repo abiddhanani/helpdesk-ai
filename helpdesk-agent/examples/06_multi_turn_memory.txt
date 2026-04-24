@@ -1,0 +1,105 @@
+=== Scenario 6: Multi-turn conversation demonstrating memory ===
+
+--- Turn 1 ---
+
+> Show me all open tickets in the network category
+
+[REASON] The user wants open tickets in the network category. I'll use search_tickets
+         with status=open and category=network.
+
+[ACT]    search_tickets({"status": "open", "category": "network"})
+
+[OBSERVE] search_tickets -> {"tickets": [{"id": 7, "title": "VPN access down for entire
+          engineering team", "priority": "critical", "sla_deadline": "2026-03-30T14:30:00",
+          "assigned_agent_id": null}, {"id": 24, "title": "Core network switch failure
+          in Building A", "priority": "critical", "sla_deadline": "2026-04-01T08:00:00",
+          "assigned_agent_id": null}, {"id": 9, "title": "Switch port not passing traffic
+          in rack B4", "priority": "high", "sla_deadline": "2026-04-06T10:00:00",
+          "assigned_agent_id": 2}, {"id": 14, "title": "DNS resolution failing for
+          internal hostnames", "priority": "high", "sla_deadline": "2026-04-07T12:00:00",
+          "assigned_agent_id": 2}, {"id": 5, "title": "Intermittent WiFi drops in
+          conference rooms", "priority": "medium", "sla_deadline": "2026-04-08T09:00:00",
+          "assigned_agent_id": 6}, {"id": 22, "title": "Firewall rule blocking internal
+          API calls", "priority": "medium", "sla_deadline": "2026-04-07T15:00:00",
+          "assigned_agent_id": 2}, {"id": 33, "title": "VLAN misconfiguration on floor
+          3 switches", "priority": "low", "sla_deadline": "2026-04-09T10:00:00",
+          "assigned_agent_id": 6}, {"id": 36, "title": "Network outage reported",
+          "priority": "high", "sla_deadline": "2026-04-04T18:22:00",
+          "assigned_agent_id": 2}], "count": 8}
+
+[ANSWER] There are 8 open tickets in the network category:
+
+| # | Title | Priority | Assigned | SLA Deadline |
+|---|-------|----------|----------|--------------|
+| 7 | VPN access down for entire engineering team | Critical | Unassigned | 2026-03-30 (OVERDUE) |
+| 24 | Core network switch failure in Building A | Critical | Unassigned | 2026-04-01 (OVERDUE) |
+| 36 | Network outage reported | High | Bob Martinez | 2026-04-04 (today) |
+| 9 | Switch port not passing traffic in rack B4 | High | Bob Martinez | 2026-04-06 |
+| 14 | DNS resolution failing for internal hostnames | High | Bob Martinez | 2026-04-07 |
+| 22 | Firewall rule blocking internal API calls | Medium | Bob Martinez | 2026-04-07 |
+| 5 | Intermittent WiFi drops in conference rooms | Medium | David Kim | 2026-04-08 |
+| 33 | VLAN misconfiguration on floor 3 switches | Low | David Kim | 2026-04-09 |
+
+--- Turn 2 ---
+
+> Which of those are past their SLA deadline?
+
+[REASON] The user is asking about the network tickets I just retrieved. From the results
+         I can see tickets #7 and #24 have deadlines in the past (2026-03-30 and
+         2026-04-01). I can confirm this with a targeted query rather than re-fetching.
+
+[ACT]    search_tickets({"status": "open", "category": "network", "sla_overdue": true})
+
+[OBSERVE] search_tickets -> {"tickets": [{"id": 7, "title": "VPN access down for entire
+          engineering team", "priority": "critical", "sla_deadline": "2026-03-30T14:30:00",
+          "assigned_agent_id": null}, {"id": 24, "title": "Core network switch failure
+          in Building A", "priority": "critical", "sla_deadline": "2026-04-01T08:00:00",
+          "assigned_agent_id": null}], "count": 2}
+
+[ANSWER] 2 of the 8 open network tickets have breached their SLA deadline:
+
+1. Ticket #7 — "VPN access down for entire engineering team" (Critical, Unassigned)
+   Deadline: 2026-03-30 14:30 — overdue by 5 days
+
+2. Ticket #24 — "Core network switch failure in Building A" (Critical, Unassigned)
+   Deadline: 2026-04-01 08:00 — overdue by 3 days
+
+Both are critical priority and currently unassigned.
+
+--- Turn 3 ---
+
+> Assign the most critical one to the best available network specialist
+
+[REASON] From the previous conversation I know ticket #7 is the most critical overdue
+         ticket (it's been overdue longest). I need to find available network specialists
+         and pick the one with the most remaining capacity.
+
+[ACT]    list_agents({"specialty": "network", "is_available": true})
+
+[OBSERVE] list_agents -> {"agents": [{"id": 1, "name": "Alice Chen", "specialty":
+          "network", "is_available": true, "max_tickets": 10}, {"id": 6, "name":
+          "David Kim", "specialty": "network", "is_available": true, "max_tickets": 10}],
+          "count": 2}
+
+[ACT]    get_agent_workload({"agent_id": 1})
+
+[ACT]    get_agent_workload({"agent_id": 6})
+
+[OBSERVE] get_agent_workload -> {"agent": {"id": 1, "name": "Alice Chen"}, "open_tickets": 0, "max_tickets": 10, "capacity_remaining": 10}
+
+[OBSERVE] get_agent_workload -> {"agent": {"id": 6, "name": "David Kim"}, "open_tickets": 6, "max_tickets": 10, "capacity_remaining": 4}
+
+[REASON] Alice Chen has 10 slots free (all capacity available), David Kim has 4.
+         Alice is the best choice for this urgent critical ticket.
+
+[ACT]    assign_ticket({"ticket_id": 7, "agent_id": 1})
+
+[OBSERVE] assign_ticket -> {"ticket_id": 7, "agent_id": 1, "agent_name": "Alice Chen",
+          "status": "open", "updated_at": "2026-04-04T10:45:22"}
+
+[ANSWER] Done. Ticket #7 ("VPN access down for entire engineering team") — the most
+critical overdue network ticket — has been assigned to Alice Chen.
+
+Alice was chosen because she has the most available capacity (10 free slots vs
+David Kim's 4). The ticket has been overdue since 2026-03-30; immediate action
+is required.

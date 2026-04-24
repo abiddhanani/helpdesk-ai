@@ -1,0 +1,292 @@
+# Evaluation scenarios for the multi-agent IT help desk system.
+#
+# Seed data reference:
+#   Agents:    1=Alice Chen (network), 2=Bob Martinez (software), 3=Carol Singh (hardware),
+#              4=David Kim (security), 5=Eva Johansson (network, unavailable),
+#              6=Frank Okafor (software), 7=Grace Lee (hardware), 8=Henry Patel (security)
+#   Customers: 1=James Wilson (Engineering), 2=Sarah Thompson (Marketing),
+#              3=Michael Brown (Finance), 4=Emily Davis (HR), 6=Jennifer Martinez (Engineering),
+#              11=Daniel Jackson (Engineering), 12=Ashley Harris (HR), 13=Matthew Lewis (Sales)
+#   Notable tickets:
+#              4=VPN gateway failure (critical, in_progress)
+#              8=SSL certificate expired (high, open)
+#              14=Password reset (medium, resolved)
+#              19=macOS update breaking dev tools (medium, in_progress)
+#              24=Backup job failing nightly (medium, in_progress)
+#   KB articles: VPN, Password Reset, Workstation Setup, Printer Offline,
+#                Ransomware, Wi-Fi, SSL Certificate, macOS Dev Tools,
+#                Storage Management, Access Request Workflow
+
+# ---------------------------------------------------------------------------
+# Happy-path KB resolution (Triage only)
+# ---------------------------------------------------------------------------
+
+- id: sc-001
+  description: VPN client not connecting — KB self-service resolution
+  tags: [happy-path, kb-resolution, network]
+  request: >
+    My VPN client is showing a connection error and I can't reach any internal systems.
+    I've already tried restarting my computer. Customer name: Jennifer Martinez, customer_id 6.
+  expected_intent: resolved
+  expected_agents: [triage]
+  expected_tools: [search_knowledge_base]
+  forbidden_tools: [assign_ticket]
+  max_hops: 2
+  judge_criteria: >
+    The response must provide concrete VPN troubleshooting steps from the knowledge base
+    (e.g., checking VPN client version, clearing cache, reinstall steps). It must not just
+    say "I'll look into this" — it must deliver the actual self-service solution.
+
+# - id: sc-002
+#   description: Locked account — password reset via KB
+#   tags: [happy-path, kb-resolution, access]
+#   request: >
+#     I'm locked out of my account after too many failed password attempts.
+#     I also need to re-enroll my MFA authenticator app. Customer: Matthew Lewis, customer_id 13.
+#   expected_intent: resolved
+#   expected_agents: [triage]
+#   expected_tools: [search_knowledge_base]
+#   forbidden_tools: []
+#   max_hops: 2
+#   judge_criteria: >
+#     The response must include the self-service portal URL and specific MFA re-enrollment
+#     steps from the knowledge base. It must not require human agent assignment for a standard
+#     password reset.
+
+# - id: sc-003
+#   description: macOS dev tools broken after OS update — KB resolution
+#   tags: [happy-path, kb-resolution, software]
+#   request: >
+#     After the latest macOS update my Homebrew is broken and Docker Desktop won't start.
+#     I need my dev environment fixed urgently. Customer: Daniel Jackson, customer_id 11.
+#   expected_intent: resolved
+#   expected_agents: [triage]
+#   expected_tools: [search_knowledge_base, create_ticket]
+#   forbidden_tools: []
+#   max_hops: 2
+#   judge_criteria: >
+#     The response must include specific commands from the KB (xcode-select --install,
+#     brew doctor) and Docker reinstall instructions. A ticket should be created to track
+#     the issue.
+
+# - id: sc-004
+#   description: Printer offline — KB self-service steps provided
+#   tags: [happy-path, kb-resolution, hardware]
+#   request: >
+#     All the printers in my department stopped working this morning. We need to print
+#     documents for a client meeting in 2 hours. Customer: Michael Brown, customer_id 3.
+#   expected_intent: resolved
+#   expected_agents: [triage]
+#   expected_tools: [search_knowledge_base, create_ticket]
+#   forbidden_tools: []
+#   max_hops: 2
+#   judge_criteria: >
+#     The response must include printer offline diagnostic steps (check IP, use printer
+#     online option in Windows, firmware rollback for fleet-wide issues). The urgency
+#     must be acknowledged.
+
+# ---------------------------------------------------------------------------
+# Two-hop: Triage -> Resolution
+# ---------------------------------------------------------------------------
+
+# - id: sc-005
+#   description: New hire workstation setup — triage creates ticket, resolution assigns agent
+#   tags: [happy-path, multi-hop, hardware, assignment]
+#   request: >
+#     We have 3 new engineers starting on Monday and need their workstations fully
+#     configured with dev tools, VPN, and repository access. Customer: Jennifer Martinez,
+#     customer_id 6. This is a planned onboarding, not an emergency.
+#   expected_intent: resolved
+#   expected_agents: [triage, resolution]
+#   expected_tools: [create_ticket, search_knowledge_base, list_agents, assign_ticket]
+#   forbidden_tools: []
+#   max_hops: 3
+#   judge_criteria: >
+#     A ticket must be created and assigned to a hardware specialist (Carol Singh or Grace Lee).
+#     The response must reference the workstation setup KB article steps and confirm assignment
+#     with the agent's name.
+
+# - id: sc-006
+#   description: SSL certificate expired on customer portal — triage creates ticket, resolution assigns
+#   tags: [happy-path, multi-hop, software, assignment]
+#   request: >
+#     Our customer-facing portal is showing a certificate error. The sales team cannot demo
+#     the product. This needs to be fixed today. Customer: Robert Garcia, customer_id 5.
+#   expected_intent: resolved
+#   expected_agents: [triage, resolution]
+#   expected_tools: [create_ticket, search_knowledge_base, list_agents, assign_ticket]
+#   forbidden_tools: []
+#   max_hops: 3
+#   judge_criteria: >
+#     A high-priority ticket must be created. The KB article on SSL certificate renewal
+#     must be referenced. The ticket must be assigned to a software specialist (Bob Martinez
+#     or Frank Okafor). The response must confirm assignment and summarize next steps.
+
+# ---------------------------------------------------------------------------
+# Read-only / informational
+# ---------------------------------------------------------------------------
+
+# - id: sc-007
+#   description: Check status of existing ticket — read-only inquiry
+#   tags: [read-only, ticket-lookup]
+#   request: >
+#     Can you check the status of ticket 8? It's about the SSL certificate error on our
+#     customer portal. I want to know if anyone is working on it.
+#   expected_intent: resolved
+#   expected_agents: [triage]
+#   expected_tools: [get_ticket_details]
+#   forbidden_tools: [create_ticket, assign_ticket]
+#   max_hops: 1
+#   judge_criteria: >
+#     The response must accurately report ticket 8's current status (open), priority (high),
+#     and assigned agent (Frank Okafor) without creating a duplicate ticket or making
+#     unnecessary changes.
+
+# - id: sc-008
+#   description: Agent workload and availability check — read-only
+#   tags: [read-only, workload-check]
+#   request: >
+#     Which network engineers are currently available and what is their current workload?
+#     We have an upcoming infrastructure project and want to know capacity.
+#   expected_intent: resolved
+#   expected_agents: [triage]
+#   expected_tools: [list_agents, get_agent_workload]
+#   forbidden_tools: [create_ticket, assign_ticket, update_ticket]
+#   max_hops: 1
+#   judge_criteria: >
+#     The response must list network-specialty agents (Alice Chen, Eva Johansson) with their
+#     availability status and current ticket counts. No ticket should be created. Eva Johansson
+#     is not available — this must be noted.
+
+# ---------------------------------------------------------------------------
+# Full 3-agent chain
+# ---------------------------------------------------------------------------
+
+# - id: sc-009
+#   description: Critical production outage with no KB match — full Triage-Resolution-Escalation chain
+#   tags: [escalation, multi-hop, critical-priority]
+#   request: >
+#     URGENT: Our entire production environment is down. The application servers are not
+#     responding and we're losing revenue every minute. This affects all 200 users.
+#     Customer: James Wilson, customer_id 1.
+#   expected_intent: escalated
+#   expected_agents: [triage, resolution, escalation]
+#   expected_tools: [create_ticket, search_knowledge_base, list_agents, get_agent_workload, assign_ticket, add_comment]
+#   forbidden_tools: []
+#   max_hops: 5
+#   judge_criteria: >
+#     A critical-priority ticket must be created, searched against KB (no exact match expected),
+#     and escalated with a human agent assigned. The escalation comment must document why
+#     auto-resolution was not possible and which agent was assigned with their specialty.
+
+# - id: sc-010
+#   description: Security incident — ransomware alert, triage routes directly to escalation
+#   tags: [escalation, security, critical-priority]
+#   request: >
+#     We've detected suspicious file encryption activity on the HR shared drive.
+#     It looks like a ransomware attack. What should we do? Customer: Emily Davis, customer_id 4.
+#   expected_intent: escalated
+#   expected_agents: [triage, escalation]
+#   expected_tools: [create_ticket, search_knowledge_base, add_comment, assign_ticket]
+#   forbidden_tools: []
+#   max_hops: 3
+#   judge_criteria: >
+#     A critical-security ticket must be created. The KB article on ransomware response
+#     must be referenced (isolate machine, do not reboot, contact security team). The ticket
+#     must be assigned to a security specialist (David Kim or Henry Patel). The response
+#     must communicate the urgency and immediate containment steps.
+
+# ---------------------------------------------------------------------------
+# Error recovery
+# ---------------------------------------------------------------------------
+
+# - id: sc-011
+#   description: Invalid ticket ID — graceful error handling
+#   tags: [error-recovery]
+#   request: >
+#     Can you check the status and add a comment to ticket 9999?
+#     I want to update it with the latest findings.
+#   expected_intent: resolved
+#   expected_agents: [triage]
+#   expected_tools: [get_ticket_details]
+#   forbidden_tools: []
+#   max_hops: 2
+#   judge_criteria: >
+#     The response must clearly communicate that ticket 9999 does not exist.
+#     It must not crash or return a confusing error. Optionally, it may offer to
+#     search for similar tickets or create a new one.
+
+# - id: sc-012
+#   description: Already-resolved ticket inquiry — avoids unnecessary re-work
+#   tags: [error-recovery, ticket-lookup]
+#   request: >
+#     I submitted a ticket about being locked out of my account last week (customer_id 12,
+#     Ashley Harris). Was it resolved? I want to make sure the MFA re-enrollment was done.
+#   expected_intent: resolved
+#   expected_agents: [triage]
+#   expected_tools: [search_tickets, get_ticket_details]
+#   forbidden_tools: [create_ticket]
+#   max_hops: 2
+#   judge_criteria: >
+#     The response must find the existing resolved password reset ticket (ticket 14, for
+#     Ashley Harris / customer 12) and confirm it is resolved with the agent's completion
+#     comment. It must NOT create a duplicate ticket since the issue is already resolved.
+
+# ---------------------------------------------------------------------------
+# Edge cases
+# ---------------------------------------------------------------------------
+
+# - id: sc-013
+#   description: Assign to unavailable agent — must warn and suggest alternative
+#   tags: [error-recovery, assignment, edge-case]
+#   request: >
+#     Please assign ticket 8 (SSL certificate error) to Eva Johansson. She's a network
+#     engineer and I think she'd be a good fit.
+#   expected_intent: resolved
+#   expected_agents: [triage, resolution]
+#   expected_tools: [get_ticket_details, list_agents]
+#   forbidden_tools: []
+#   max_hops: 2
+#   judge_criteria: >
+#     The agent must look up ticket 8 and check agent availability. It must identify that
+#     Eva Johansson (agent 5) is currently unavailable and communicate this clearly. It
+#     must not silently assign the ticket to an unavailable agent. Ideally it suggests an
+#     available alternative (Alice Chen or another network-capable agent) and assigns to
+#     them instead.
+
+# - id: sc-014
+#   description: All agents at capacity — check workloads before assigning
+#   tags: [edge-case, assignment, workload]
+#   request: >
+#     We have a new critical issue: the corporate email server is rejecting all outbound
+#     messages. I need to create a ticket and assign it, but I heard all the engineers are
+#     swamped right now. Please check agent workloads first and assign to whoever has the
+#     most bandwidth. Customer: James Wilson, customer_id 1.
+#   expected_intent: resolved
+#   expected_agents: [triage, resolution]
+#   expected_tools: [create_ticket, list_agents, get_agent_workload, assign_ticket]
+#   forbidden_tools: []
+#   max_hops: 3
+#   judge_criteria: >
+#     A high-priority ticket must be created for the email server outage. The agent must
+#     call get_agent_workload to check current ticket counts before assigning. The response
+#     must explicitly acknowledge the capacity situation and name the agent selected based
+#     on lowest current workload. Assigning without checking workloads first is a failure.
+
+# - id: sc-015
+#   description: SLA already breached — ticket 4 critical VPN outage past due
+#   tags: [edge-case, sla]
+#   request: >
+#     Ticket 4 is about a VPN gateway failure that's been open for a while. Can you check
+#     its current status and whether the SLA has been met? Customer: James Wilson,
+#     customer_id 1.
+#   expected_intent: resolved
+#   expected_agents: [triage]
+#   expected_tools: [get_ticket_details, get_sla_report]
+#   forbidden_tools: [create_ticket]
+#   max_hops: 2
+#   judge_criteria: >
+#     The agent must retrieve ticket 4's details (critical priority, in_progress) and check
+#     its SLA report. If the SLA is breached, the response must state this clearly — it must
+#     not claim the SLA is fine when it is not. The response should include the ticket
+#     priority, current status, assigned agent, and the SLA finding.
