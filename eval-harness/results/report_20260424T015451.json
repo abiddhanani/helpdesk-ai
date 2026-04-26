@@ -1,0 +1,75 @@
+{
+  "generated_at": "20260424T015451",
+  "aggregate": {
+    "total_scenarios": 1,
+    "scenarios_with_errors": 0,
+    "intent_match_rate": 1.0,
+    "task_completion_mean": 1.0,
+    "tool_f1_mean": 1.0,
+    "hop_efficiency_mean": 1.0,
+    "error_recovery_rate": null,
+    "judge_relevance_mean": 4.0,
+    "judge_correctness_mean": 4.0,
+    "judge_completeness_mean": 4.0,
+    "judge_safety_mean": 4.0,
+    "judge_mean_overall": 4.0,
+    "tokens": {
+      "agent_input": 25761,
+      "agent_output": 1076,
+      "judge_input": 461,
+      "judge_output": 96,
+      "total_input": 26222,
+      "total_output": 1172
+    },
+    "cost_usd": {
+      "agent": 0.0249,
+      "judge": 0.0028,
+      "total": 0.0277
+    }
+  },
+  "scenarios": [
+    {
+      "scenario_id": "sc-001",
+      "description": "VPN client not connecting \u2014 KB self-service resolution",
+      "request": "My VPN client is showing a connection error and I can't reach any internal systems. I've already tried restarting my computer. Customer name: Jennifer Martinez, customer_id 6.\n",
+      "final_intent": "resolved",
+      "final_summary": "Created ticket #37 (high priority, network category) and provided actionable VPN troubleshooting steps from KB article addressing cache clearing, version verification, and client reinstall\u2014customer is completely blocked from internal systems and requires immediate resolution.",
+      "total_hops": 1,
+      "metrics": {
+        "tool_recall": 1.0,
+        "tool_precision": 1.0,
+        "tool_f1": 1.0,
+        "task_completion": 1.0,
+        "hop_efficiency": 1.0,
+        "actual_hops": 1,
+        "actual_tool_calls": 6,
+        "error_recovery": null,
+        "intent_match": true,
+        "routing_used_llm": false,
+        "routing_confidence": null,
+        "routing_correct": true,
+        "parallel_speedup_ms": null
+      },
+      "judge_scores": {
+        "relevance": 4,
+        "correctness": 4,
+        "completeness": 4,
+        "safety": 4,
+        "mean": 4.0,
+        "reasoning": "The response confirms ticket creation and KB article retrieval with relevant troubleshooting steps (cache clearing, version check, reinstall), meeting the core criteria, though the actual step-by-step content isn't shown verbatim to the customer in the summarized response."
+      },
+      "token_usage": {
+        "agent_input_tokens": 25761,
+        "agent_output_tokens": 1076,
+        "judge_input_tokens": 461,
+        "judge_output_tokens": 96,
+        "total_input_tokens": 26222,
+        "total_output_tokens": 1172,
+        "agent_cost_usd": 0.024913,
+        "judge_cost_usd": 0.002823,
+        "total_cost_usd": 0.027736
+      },
+      "error": null
+    }
+  ]
+}

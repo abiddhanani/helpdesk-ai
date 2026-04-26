@@ -1,0 +1,78 @@
+{
+  "request": "can you get me the agent workload",
+  "result": {
+    "trace_id": "194aafb2",
+    "final_intent": "escalated",
+    "final_summary": "Resolution branch encountered an error due to missing ticket_id (null), indicating the triage request was operational/management in nature rather than a specific end-user ticket. Escalation branch successfully processed the request as a system-wide operational analysis, generating a comprehensive dashboard revealing critical SLA breaches (44% system-wide, 100% on Critical/High priorities), capacity constraints across 7 available agents, and crisis-level issues in Security (100% breach) and Software (64% breach) categories. Escalation recommended immediate reassignment and priority escalation based on detailed workload analysis and root cause identification. The escalated intent takes precedence as this represents an operational management request requiring supervisory action rather than standard ticket resolution.",
+    "hops": [
+      {
+        "sender": "triage",
+        "output": {
+          "intent": "route_to_escalation",
+          "confidence": 0.95,
+          "summary": "Operational request for agent workload metrics routed to escalation team for administrative reporting and data retrieval.",
+          "actions_taken": [
+            "Identified request as operational/management task with no end-user ticket",
+            "Skipped ticket creation per protocol",
+            "Routed to escalation for workload reporting and metrics"
+          ],
+          "ticket_id": null
+        },
+        "timestamp": "2026-04-26T02:08:37.632253Z",
+        "trace_id": "8bf91c6f",
+        "input_tokens": 3833,
+        "output_tokens": 205
+      },
+      {
+        "sender": "resolution",
+        "output": {
+          "intent": "error",
+          "confidence": 0.95,
+          "summary": "No ticket to resolve \u2014 triage routed an operational/management request with no ticket_id created; clarification needed on whether to process analytics data or await a specific ticket.",
+          "actions_taken": [
+            "Identified that triage output has ticket_id: null",
+            "Determined no end-user ticket exists to process",
+            "Requested clarification on task type (analytics vs. specific ticket resolution)"
+          ],
+          "ticket_id": null
+        },
+        "timestamp": "2026-04-26T02:08:44.725836Z",
+        "trace_id": "22309a28",
+        "input_tokens": 3712,
+        "output_tokens": 194
+      },
+      {
+        "sender": "escalation",
+        "output": {
+          "intent": "escalated",
+          "confidence": 0.98,
+          "summary": "Comprehensive operational dashboard compiled: 44% system-wide SLA breach rate with 100% breach on Critical/High priorities; Security and Software categories at crisis levels; 7 agents available with 15 remaining capacity tickets; immediate reassignment and priority escalation recommended.",
+          "actions_taken": [
+            "Retrieved complete agent roster with individual workload and availability status",
+            "Generated system-wide SLA compliance report by category and priority",
+            "Calculated per-agent utilization rates and capacity remaining",
+            "Identified critical breach patterns in Security (100%) and Software (64%) categories",
+            "Flagged Alice Chen (Network) and Henry Patel (Security) as near-capacity agents",
+            "Noted Eva Johansson (Network, unavailable) has 8 free slots if reactivated",
+            "Compiled comprehensive dashboard with root causes and four-point remediation plan"
+          ],
+          "ticket_id": null
+        },
+        "timestamp": "2026-04-26T02:08:56.604537Z",
+        "trace_id": "f89af6d5",
+        "input_tokens": 6204,
+        "output_tokens": 1513
+      }
+    ],
+    "routing_decisions": []
+  },
+  "trace": [
+    {
+      "trace_id": "194aafb2",
+      "timestamp": "2026-04-26T02:08:59.056494+00:00",
+      "event_type": "final",
+      "outcome": "escalated",
+      "total_hops": 3
+    }
+  ]
+}

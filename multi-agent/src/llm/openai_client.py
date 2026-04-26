@@ -90,7 +90,7 @@ class OpenAILLMClient:
 
         response = await self._client.chat.completions.create(**kwargs)
         raw = _adapt_response(response)
-        parsed = response_schema.model_validate_json(raw.content or "{}")
+        parsed = response_schema.model_validate_json(_strip_fences(raw.content or "{}"))
         return parsed, raw
 
     def _build_messages(
@@ -115,6 +115,17 @@ class OpenAILLMClient:
             return list(messages), extra_body
         else:
             return [{"role": "system", "content": system}, *messages], None
+
+
+def _strip_fences(text: str) -> str:
+    """Remove markdown code fences that models sometimes wrap JSON in."""
+    text = text.strip()
+    if text.startswith("```"):
+        text = text.split("```")[1]
+        if text.startswith("json"):
+            text = text[4:]
+        text = text.strip()
+    return text
 
 
 def _to_openai_tool(t: ToolDefinition) -> dict[str, Any]:

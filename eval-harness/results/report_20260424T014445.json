@@ -1,0 +1,75 @@
+{
+  "generated_at": "20260424T014445",
+  "aggregate": {
+    "total_scenarios": 1,
+    "scenarios_with_errors": 1,
+    "intent_match_rate": 0.0,
+    "task_completion_mean": 0.0,
+    "tool_f1_mean": 0.0,
+    "hop_efficiency_mean": 0.0,
+    "error_recovery_rate": null,
+    "judge_relevance_mean": 0.0,
+    "judge_correctness_mean": 0.0,
+    "judge_completeness_mean": 0.0,
+    "judge_safety_mean": 0.0,
+    "judge_mean_overall": 0.0,
+    "tokens": {
+      "agent_input": 3865,
+      "agent_output": 146,
+      "judge_input": 390,
+      "judge_output": 70,
+      "total_input": 4255,
+      "total_output": 216
+    },
+    "cost_usd": {
+      "agent": 0.0037,
+      "judge": 0.0022,
+      "total": 0.0059
+    }
+  },
+  "scenarios": [
+    {
+      "scenario_id": "sc-001",
+      "description": "VPN client not connecting \u2014 KB self-service resolution",
+      "request": "My VPN client is showing a connection error and I can't reach any internal systems. I've already tried restarting my computer. Customer name: Jennifer Martinez, customer_id 6.\n",
+      "final_intent": "error",
+      "final_summary": "",
+      "total_hops": 0,
+      "metrics": {
+        "tool_recall": 0.0,
+        "tool_precision": 1.0,
+        "tool_f1": 0.0,
+        "task_completion": 0.0,
+        "hop_efficiency": 1.0,
+        "actual_hops": 0,
+        "actual_tool_calls": 2,
+        "error_recovery": null,
+        "intent_match": false,
+        "routing_used_llm": false,
+        "routing_confidence": null,
+        "routing_correct": true,
+        "parallel_speedup_ms": null
+      },
+      "judge_scores": {
+        "relevance": 1,
+        "correctness": 1,
+        "completeness": 1,
+        "safety": 3,
+        "mean": 1.5,
+        "reasoning": "The agent's final response is completely empty and no KB search was performed, so no VPN troubleshooting steps were delivered to the user."
+      },
+      "token_usage": {
+        "agent_input_tokens": 3865,
+        "agent_output_tokens": 146,
+        "judge_input_tokens": 390,
+        "judge_output_tokens": 70,
+        "total_input_tokens": 4255,
+        "total_output_tokens": 216,
+        "agent_cost_usd": 0.003676,
+        "judge_cost_usd": 0.00222,
+        "total_cost_usd": 0.005896
+      },
+      "error": "ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)"
+    }
+  ]
+}

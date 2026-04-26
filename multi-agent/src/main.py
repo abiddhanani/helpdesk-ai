@@ -25,6 +25,8 @@ from dotenv import load_dotenv
 from mcp.client.stdio import StdioServerParameters, get_default_environment
 from openai import AsyncOpenAI
 
+from flint_ai import configure_engine, shutdown_engine
+
 from src.agents.escalation import EscalationAgent
 from src.agents.resolution import ResolutionAgent
 from src.agents.triage import TriageAgent
@@ -39,44 +41,16 @@ EXAMPLES_DIR = Path(__file__).parent.parent / "examples"
 
 async def run_request(
     request: str,
-    llm_client: OpenAILLMClient,
-    agent_model: str,
-    router_model: str,
-    db_url: str,
+    orchestrator: FlintOrchestrator,
     label: str | None = None,
 ) -> str:
     trace_id = uuid.uuid4().hex[:8]
     trace_logger = TraceLogger(trace_id)
 
-    server_params = StdioServerParameters(
-        command="uv",
-        args=["run", "python", "-m", "src.server"],
-        cwd=str(EXERCISE_1_DIR),
-        env={**get_default_environment(), "DATABASE_URL": db_url},
-    )
-
-    triage_adapter = SpecialistAgentAdapter(
-        "triage", TriageAgent, server_params, llm_client, agent_model, router_model
-    )
-    resolution_adapter = SpecialistAgentAdapter(
-        "resolution", ResolutionAgent, server_params, llm_client, agent_model, router_model
-    )
-    escalation_adapter = SpecialistAgentAdapter(
-        "escalation", EscalationAgent, server_params, llm_client, agent_model, router_model
-    )
-    synthesis_adapter = SynthesisAdapter(llm_client, router_model)
-
-    orchestrator = FlintOrchestrator(
-        triage_adapter,
-        resolution_adapter,
-        escalation_adapter,
-        synthesis_adapter,
-        trace_logger,
-    )
-
-    # Workflow.run() is sync (manages its own event loop via thread pool)
     loop = asyncio.get_event_loop()
-    result = await loop.run_in_executor(None, orchestrator.run, request, trace_id)
+    result = await loop.run_in_executor(
+        None, orchestrator.run, request, trace_id, trace_logger
+    )
 
     EXAMPLES_DIR.mkdir(exist_ok=True)
     filename = f"{label}_{trace_id}.json" if label else f"{trace_id}.json"
@@ -111,36 +85,70 @@ async def run() -> None:
     openai_client = AsyncOpenAI(api_key=api_key, base_url=base_url)
     llm_client = OpenAILLMClient(openai_client)
 
+    server_params = StdioServerParameters(
+        command="uv",
+        args=["run", "python", "-m", "src.server"],
+        cwd=str(EXERCISE_1_DIR),
+        env={**get_default_environment(), "DATABASE_URL": db_url},
+    )
+
+    triage_adapter = SpecialistAgentAdapter(
+        "triage", TriageAgent, server_params, llm_client, agent_model, router_model
+    )
+    resolution_adapter = SpecialistAgentAdapter(
+        "resolution", ResolutionAgent, server_params, llm_client, agent_model, router_model
+    )
+    escalation_adapter = SpecialistAgentAdapter(
+        "escalation", EscalationAgent, server_params, llm_client, agent_model, router_model
+    )
+    synthesis_adapter = SynthesisAdapter(llm_client, router_model)
+
+    configure_engine(
+        agents=[triage_adapter, resolution_adapter, escalation_adapter, synthesis_adapter],
+        queue_backend="memory",
+        store_backend="memory",
+    )
+
+    orchestrator = FlintOrchestrator(
+        triage_adapter,
+        resolution_adapter,
+        escalation_adapter,
+        synthesis_adapter,
+    )
+
     print(f"Multi-Agent IT Help Desk (Flint DAG). Model: {agent_model} | Router: {router_model}")
-    print("Dashboard: http://localhost:5160/ui/ (available during each request)\n")
+    print("Dashboard: http://localhost:5160/ui/\n")
 
-    if len(sys.argv) > 1:
-        request = " ".join(sys.argv[1:])
-        summary = await run_request(request, llm_client, agent_model, router_model, db_url)
-        print(f"\n{summary}\n")
-        return
-
-    print("Type 'exit' to quit.\n")
-
-    loop = asyncio.get_event_loop()
-    while True:
-        try:
-            print("> ", end="", flush=True)
-            user_input = await loop.run_in_executor(None, sys.stdin.readline)
-            user_input = user_input.strip()
-        except (EOFError, KeyboardInterrupt):
-            break
-
-        if not user_input:
-            continue
-        if user_input.lower() in ("exit", "quit"):
-            break
-
-        try:
-            summary = await run_request(user_input, llm_client, agent_model, router_model, db_url)
+    try:
+        if len(sys.argv) > 1:
+            request = " ".join(sys.argv[1:])
+            summary = await run_request(request, orchestrator)
             print(f"\n{summary}\n")
-        except Exception as exc:
-            print(f"\nError: {exc}\n", file=sys.stderr)
+            return
+
+        print("Type 'exit' to quit.\n")
+
+        loop = asyncio.get_event_loop()
+        while True:
+            try:
+                print("> ", end="", flush=True)
+                user_input = await loop.run_in_executor(None, sys.stdin.readline)
+                user_input = user_input.strip()
+            except (EOFError, KeyboardInterrupt):
+                break
+
+            if not user_input:
+                continue
+            if user_input.lower() in ("exit", "quit"):
+                break
+
+            try:
+                summary = await run_request(user_input, orchestrator)
+                print(f"\n{summary}\n")
+            except Exception as exc:
+                print(f"\nError: {exc}\n", file=sys.stderr)
+    finally:
+        shutdown_engine()
 
 
 def main() -> None:

@@ -32,15 +32,17 @@ class FlintOrchestrator:
         resolution_adapter: SpecialistAgentAdapter,
         escalation_adapter: SpecialistAgentAdapter,
         synthesis_adapter: SynthesisAdapter,
-        trace_logger: TraceLogger,
+        trace_logger: TraceLogger | None = None,
     ) -> None:
         self._triage = triage_adapter
         self._resolution = resolution_adapter
         self._escalation = escalation_adapter
         self._synthesis = synthesis_adapter
-        self.trace = trace_logger
+        self.trace = trace_logger or TraceLogger("default")
 
-    def run(self, request: str, trace_id: str) -> OrchestratorResult:
+    def run(self, request: str, trace_id: str, trace_logger: TraceLogger | None = None) -> OrchestratorResult:
+        if trace_logger is not None:
+            self.trace = trace_logger
         results = (
             Workflow(f"helpdesk-{trace_id}")
             .add(Node("triage", agent=self._triage, prompt=request))

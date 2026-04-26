@@ -100,17 +100,10 @@ class BaseSpecialistAgent:
                 self.trace.reasoning(self.name, response.content)
 
             if response.stop_reason == "end_turn":
-                # Try to parse the JSON from the text response first
                 content = response.content or ""
                 try:
-                    import json as _json2
-                    # Strip markdown fences if present
-                    text = content.strip()
-                    if text.startswith("```"):
-                        text = text.split("```")[1]
-                        if text.startswith("json"):
-                            text = text[4:]
-                    output = AgentOutput.model_validate_json(text.strip())
+                    from src.llm.openai_client import _strip_fences
+                    output = AgentOutput.model_validate_json(_strip_fences(content))
                 except Exception:
                     # Fallback: ask the model to produce structured output explicitly
                     try:

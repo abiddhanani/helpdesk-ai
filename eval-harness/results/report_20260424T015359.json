@@ -1,0 +1,75 @@
+{
+  "generated_at": "20260424T015359",
+  "aggregate": {
+    "total_scenarios": 1,
+    "scenarios_with_errors": 0,
+    "intent_match_rate": 1.0,
+    "task_completion_mean": 1.0,
+    "tool_f1_mean": 1.0,
+    "hop_efficiency_mean": 0.0,
+    "error_recovery_rate": null,
+    "judge_relevance_mean": 3.0,
+    "judge_correctness_mean": 3.0,
+    "judge_completeness_mean": 3.0,
+    "judge_safety_mean": 4.0,
+    "judge_mean_overall": 3.25,
+    "tokens": {
+      "agent_input": 55622,
+      "agent_output": 3155,
+      "judge_input": 520,
+      "judge_output": 101,
+      "total_input": 56142,
+      "total_output": 3256
+    },
+    "cost_usd": {
+      "agent": 0.0571,
+      "judge": 0.0031,
+      "total": 0.0602
+    }
+  },
+  "scenarios": [
+    {
+      "scenario_id": "sc-001",
+      "description": "VPN client not connecting \u2014 KB self-service resolution",
+      "request": "My VPN client is showing a connection error and I can't reach any internal systems. I've already tried restarting my computer. Customer name: Jennifer Martinez, customer_id 6.\n",
+      "final_intent": "resolved",
+      "final_summary": "Resolution: HIGH-priority VPN connection ticket #36 is properly assigned to Network Specialist Alice Chen with comprehensive KB-driven troubleshooting steps already provided to customer Jennifer Martinez; ticket is in_progress awaiting customer feedback on step execution. | Escalation: Failed to produce structured response",
+      "total_hops": 3,
+      "metrics": {
+        "tool_recall": 1.0,
+        "tool_precision": 1.0,
+        "tool_f1": 1.0,
+        "task_completion": 1.0,
+        "hop_efficiency": 0.0,
+        "actual_hops": 3,
+        "actual_tool_calls": 14,
+        "error_recovery": null,
+        "intent_match": true,
+        "routing_used_llm": true,
+        "routing_confidence": 0.95,
+        "routing_correct": true,
+        "parallel_speedup_ms": 7776.050501037389
+      },
+      "judge_scores": {
+        "relevance": 3,
+        "correctness": 3,
+        "completeness": 3,
+        "safety": 4,
+        "mean": 3.25,
+        "reasoning": "The agent did search the KB and add comments with troubleshooting steps, but the final response to the user is a backend status summary rather than delivering the actual VPN troubleshooting steps directly to the evaluator/user, failing the core requirement of presenting concrete self-service resolution content."
+      },
+      "token_usage": {
+        "agent_input_tokens": 55622,
+        "agent_output_tokens": 3155,
+        "judge_input_tokens": 520,
+        "judge_output_tokens": 101,
+        "total_input_tokens": 56142,
+        "total_output_tokens": 3256,
+        "agent_cost_usd": 0.057118,
+        "judge_cost_usd": 0.003075,
+        "total_cost_usd": 0.060193
+      },
+      "error": null
+    }
+  ]
+}

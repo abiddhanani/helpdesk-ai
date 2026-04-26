@@ -1,0 +1,66 @@
+{
+  "request": "My VPN is not working",
+  "result": {
+    "trace_id": "02035b90",
+    "final_intent": "error",
+    "final_summary": "Both resolution and escalation branches encountered errors due to missing essential information. No ticket ID or search criteria were provided to either agent. The Triage Agent failed to produce a structured response, preventing normal ticket processing. Both agents requested clarification on ticket ID and request details before proceeding. No actions could be taken without these required parameters.",
+    "hops": [
+      {
+        "sender": "triage",
+        "output": {
+          "intent": "error",
+          "confidence": 0.0,
+          "summary": "Failed to produce structured response",
+          "actions_taken": [],
+          "ticket_id": null
+        },
+        "timestamp": "2026-04-26T01:55:34.907333Z",
+        "trace_id": "63f96ca8",
+        "input_tokens": 3831,
+        "output_tokens": 144
+      },
+      {
+        "sender": "resolution",
+        "output": {
+          "intent": "error",
+          "confidence": 0.0,
+          "summary": "Cannot resolve ticket without ticket ID or search criteria provided.",
+          "actions_taken": [],
+          "ticket_id": null
+        },
+        "timestamp": "2026-04-26T01:55:38.186291Z",
+        "trace_id": "7e441597",
+        "input_tokens": 3652,
+        "output_tokens": 138
+      },
+      {
+        "sender": "escalation",
+        "output": {
+          "intent": "error",
+          "confidence": 0.0,
+          "summary": "Cannot escalate without ticket ID or request details; Triage Agent failed to produce structured response and no fallback context was provided.",
+          "actions_taken": [
+            "Reviewed Triage Agent error output",
+            "Requested clarification on ticket ID and request type",
+            "Unable to proceed without essential escalation parameters"
+          ],
+          "ticket_id": null
+        },
+        "timestamp": "2026-04-26T01:55:39.926874Z",
+        "trace_id": "3ec695bf",
+        "input_tokens": 3311,
+        "output_tokens": 199
+      }
+    ],
+    "routing_decisions": []
+  },
+  "trace": [
+    {
+      "trace_id": "02035b90",
+      "timestamp": "2026-04-26T01:55:41.416479+00:00",
+      "event_type": "final",
+      "outcome": "error",
+      "total_hops": 3
+    }
+  ]
+}
